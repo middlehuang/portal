@@ -364,7 +364,9 @@ Spring Boot Actuator, Spring Boot DevTools, Eureka Discovery Client, Zuul
 <p>Before containerization, you have to build the jar files through one of two ways: direct maven command or through Eclipse. First option requires installation of maven library through command line. We will use second option since it is built in the Eclipse. For each project, under pom.xml click <strong>Maven build</strong> -&gt; type <strong>clean package</strong> in Goals -&gt; Run. Now the jar files will be created in the target folders and will be used to build docker images.</p>
 <p>In each of project, create a <strong>Dockerfile</strong>. At the root of the <strong>demo</strong>, create docker-compose.yml. Copy the contents and run the following command:</p>
 <pre class="docker"><code>docker-compose up</code></pre>
-<p>It may take 3-5 minutes for the applications to fully load up.</p>
+<p>It may take 3-5 minutes for the applications to fully load up. The first URL under Currency Conversion Service and the second URL under API Gateway above indicated will <strong>not</strong> work.</p>
+<p>** If you were using Java 11 for the project, you have to change the version of based image in each of the Dockerfile, for example:</p>
+<pre class="text"><code>From adoptopenjdk/openjdk11:alpine</code></pre>
 <p>Now docker compose may have an elegant way to do the client-side load balancing, but for now I have not figured out other than create different images. Even still, it is not the tool for scaling up. Therefore, in the future, we need to introduce Kubernetes or Docker Swarm to do the job with many other functionality.</p>
 </div>
 
