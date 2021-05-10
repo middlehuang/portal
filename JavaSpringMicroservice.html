@@ -361,6 +361,7 @@ Spring Boot Actuator, Spring Boot DevTools, Eureka Discovery Client, Zuul
 </div>
 <div id="dockerize" class="section level1">
 <h1>3 Dockerize</h1>
+<p>Before containerization, you have to build the jar files through one of two ways: direct maven command or through Eclipse. First option requires installation of maven library through command line. We will use second option since it is built in the Eclipse. For each project, under pom.xml click <strong>Maven build</strong> -&gt; type <strong>clean package</strong> in Goals -&gt; Run. Now the jar files will be created in the target folders and will be used to build docker images.</p>
 <p>In each of project, create a <strong>Dockerfile</strong>. At the root of the <strong>demo</strong>, create docker-compose.yml. Copy the contents and run the following command:</p>
 <pre class="docker"><code>docker-compose up</code></pre>
 <p>It may take 3-5 minutes for the applications to fully load up.</p>
