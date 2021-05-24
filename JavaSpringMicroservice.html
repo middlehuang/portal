@@ -386,7 +386,6 @@ Spring Boot Actuator, Spring Boot DevTools, Eureka Discovery Client, Zuul
 <p><strong>API Gateway</strong>:</p>
 <ul>
 <li><p><a href="http://localhost:8765/currency-exchange-service/currency-exchange/from/USD/to/TWD">http://localhost:8765/currency-exchange-service/currency-exchange/from/USD/to/TWD</a></p></li>
-<li><p><a href="http://localhost:8765/currency-conversion-service/currency-converter/from/USD/to/TWD/quantity/10">http://localhost:8765/currency-conversion-service/currency-converter/from/USD/to/TWD/quantity/10</a></p></li>
 <li><p><a href="http://localhost:8765/currency-conversion-service/currency-converter-feign/from/USD/to/TWD/quantity/10">http://localhost:8765/currency-conversion-service/currency-converter-feign/from/USD/to/TWD/quantity/10</a></p></li>
 </ul>
 <p>Now since we include Ribbon as client side load balancing, we can test by adding more port for <strong>currency exchange serivce</strong>.</p>
@@ -412,7 +411,7 @@ Spring Boot Actuator, Spring Boot DevTools, Eureka Discovery Client, Zuul
 <li>Copy the contents and run the following command:</li>
 </ol>
 <pre class="docker"><code>docker-compose up</code></pre>
-<p>It may take 3-5 minutes for the applications to fully load up. The first URL under Currency Conversion Service and the second URL under API Gateway above indicated will <strong>not</strong> work.</p>
+<p>It may take 3-5 minutes for the applications to fully load up.</p>
 </div>
 <div id="discussion-and-problems" class="section level1">
 <h1>4 Discussion and Problems</h1>
