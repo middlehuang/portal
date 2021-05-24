@@ -248,16 +248,45 @@ div.tocify {
 
 <div id="setup" class="section level1">
 <h1>1 Setup</h1>
-<p>This demo project is to demonstrate the use of basic functionality of Eclipse and docker to develop a fast-deliverable stand-alone Spring-based application. The technology used in the development of Java web application will be Spring Framework which includes Spring Boot and Spring Cloud. So before proceed to the next section, make sure install Eclipse and docker in your local environment. Since this demo is focus on the building of the project and not on actual coding, the source will be on <a href="https://github.com/hhuangpen/java-spring-demo/tree/main">github</a>. Again, for the purpose of building this project, I recommend not download the entire package rather just specific files or even copy code and paste to where needs be. Build the thing from ground up by yourself.</p>
-<p>** We will be using Java 8 so install JDK 8 which contains a compatible JRE for Eclipse, although Java 11 might be fine as well but has not been tested. Here is a website for download: <a href="https://adoptopenjdk.net" class="uri">https://adoptopenjdk.net</a></p>
+<p>This demo project is to demonstrate the use of basic functionality of Eclipse and docker to develop a fast-deliverable stand-alone Spring-based application. The technology used in the development of Java web application will be Spring Framework which includes Spring Boot and Spring Cloud. So before proceed to the next section, make sure install Eclipse and docker in your local environment. Since this demo is focus on the building of the project and not on actual coding, the source will be on <a href="https://github.com/NinoX-RD/DevPaul/tree/main/java-spring-demo-p1">github</a>. Again, for the purpose of building this project, I recommend not download the entire package rather just specific files or even copy code and paste to where needs be. Build the thing from ground up by yourself.</p>
+<p>Here are the the suggested requirements for this build and the actual built version:</p>
+<ul>
+<li>Java 8 (openjdk 8 version 1.8.0_282)</li>
+<li>Spring Boot 2.3 (Spring Boot 2.3.9.RELEASE)</li>
+<li>Tomcat 9 (Apache Tomcat 9.0.43) which comes with Spring Boot</li>
+<li>Docker (Docker version 20.10.6, build 370c289)</li>
+</ul>
+<p>** For reference, here is a website for download Java 8: <a href="https://adoptopenjdk.net" class="uri">https://adoptopenjdk.net</a> and steps to setup Eclipse compiler.</p>
+<ol style="list-style-type: decimal">
+<li>Choose OpenJDK 8 and HotSpot (either one is fine)</li>
+<li>Select Release Archive &amp; Nightly Builds for the desired subversion and download (Latest release is fine)</li>
+<li>After installation, click <strong>Project</strong> from the top bar in Eclipse.</li>
+<li>Select <strong>Properties</strong></li>
+<li>Click <strong>Java Compiler</strong> and select <strong>Java Build Path</strong></li>
+<li>Click <strong>Add Library</strong> and select <strong>JRE System Library</strong></li>
+<li>If you cannot find the installed version, click <strong>Add…</strong> and select JRE Type (MacOS X VM for Mac user)</li>
+<li>Browse and find the installed JRE(the path should be by default <strong>/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home/jre</strong>)</li>
+</ol>
+<p>For more information and help, here is <a href="https://help.eclipse.org/2021-03/index.jsp?topic=/org.eclipse.jdt.doc.user/tasks/task-add_new_jre.htm">Eclipse guide</a>.</p>
 </div>
 <div id="code-build" class="section level1">
 <h1>2 Code Build</h1>
 <div id="begin-by-maven" class="section level2">
 <h2>2.1 Begin by Maven</h2>
-<p>Go to <a href="https://start.spring.io">spring initializr</a>. We will be creating four Maven files (each one is considered a project) since we are developing microservices. Select Maven Project, Language Java, and Spring Boot 2.3.10 (Other version above 2.4 might be inconsistent with the Spring Cloud setup we will be using.)</p>
-<p>In Project Metadata section, there will be two important fields to fill – Group and Artifact (three actually if version is included, but spring initializr will automatically fill 0.0.1-SNAPSHOT for every project, one has to manually change the field if desired in the pom.xml later). Group usually is a backward string of company’s domain, but in this case just fill <strong>com.demo.microservices</strong> for every Maven files. Artifact is considered traditionally the project name and is used for referencing the jar file later with version. We will create four artifact: <strong>currency-exchange-service</strong>, <strong>currency-conversion-service</strong>, <strong>netflix-eureka-naming-server</strong>, and <strong>netflix-zuul-api-gateway-server</strong>.</p>
-<p>Next select Jar packaging and Java 8. In Dependencies section, there are many to choose from. Table below shows dependencies each artifact needs.</p>
+<p>Go to <a href="https://start.spring.io">spring initializr</a> to get easy maven project setup. We will be creating four Maven files (each one is considered a project) since we are developing microservices.</p>
+<ol style="list-style-type: decimal">
+<li>Select Maven Project, Language Java, and Spring Boot 2.3.X (Version above 2.4 might be inconsistent with the Spring Cloud setup we will be using.)</li>
+</ol>
+<p>In Project Metadata section, there will be two important fields to fill – Group and Artifact (three actually if version is included, but spring initializr will automatically fill 0.0.1-SNAPSHOT for every project, one has to manually change the field if desired in the pom.xml later).</p>
+<ol start="2" style="list-style-type: decimal">
+<li>Fill <strong>com.demo.microservices</strong> for Group, which usually is a backward string of company’s domain.</li>
+</ol>
+<p>Artifact is considered traditionally the project name and is used for referencing the jar file later with version.</p>
+<ol start="3" style="list-style-type: decimal">
+<li><p>We will create four artifacts: <strong>currency-exchange-service</strong>, <strong>currency-conversion-service</strong>, <strong>netflix-eureka-naming-server</strong>, and <strong>netflix-zuul-api-gateway-server</strong>.</p></li>
+<li><p>Next select Jar packaging and Java 8.</p></li>
+<li><p>In Dependencies section, there are many to choose from. Table below shows dependencies each artifact needs.</p></li>
+</ol>
 <table class=" lightable-paper" style="font-family: &quot;Arial Narrow&quot;, arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
@@ -304,13 +333,25 @@ Spring Boot Actuator, Spring Boot DevTools, Eureka Discovery Client, Zuul
 </tr>
 </tbody>
 </table>
-<p>After setting up, click generate, and it will download zip files to your desktop. Unzip files and move them under one unified folder, <strong>demo</strong> in this case.</p>
+<ol start="6" style="list-style-type: decimal">
+<li>After setting up, click generate, and it will download zip files to your desktop. Unzip files and move them under one unified folder, <strong>demo</strong> in this case.</li>
+</ol>
 </div>
 <div id="importing-projects-to-eclipse" class="section level2">
 <h2>2.2 Importing projects to Eclipse</h2>
-<p>Now go to Eclipse and create a workspace under demo. Now select <strong>Import projects</strong> and type <strong>Existing Maven Projects</strong> -&gt; Browse Root Directory and find the demo folder -&gt; select all projects -&gt; Finish.</p>
-<p>Make sure for each project it has <strong>M</strong> and <strong>J</strong> (Maven and Java application) superscript icons for poper setup. If not, try click to Maven -&gt; Update project. It will take several minutes for Eclipse to download all the jars specified in the pom.xml and building Maven Dependencies.</p>
-<p>First go to every projects that have <strong>Eureka Discovery Client</strong> in pom.xml. Modify the line to include exclusions tag:</p>
+<p>Now go to Eclipse and create a workspace under demo.</p>
+<ol style="list-style-type: decimal">
+<li>Select <strong>Import projects</strong> and type <strong>Existing Maven Projects</strong></li>
+<li>Browse Root Directory and find the demo folder</li>
+<li>select all projects</li>
+</ol>
+<p>Make sure for each project has <strong>M</strong> and <strong>J</strong> (Maven and Java application) superscript icons for poper setup. If not, try the following:</p>
+<ol style="list-style-type: decimal">
+<li>right click on any project folder</li>
+<li>Maven -&gt; Update project.</li>
+</ol>
+<p>It will take several minutes for Eclipse to download all the jars specified in the pom.xml and building Maven Dependencies.</p>
+<p>Now go to every projects that have <strong>Eureka Discovery Client</strong>. Modify the line in pom.xml to include exclusions tag:</p>
 <pre class="text"><code>&lt;dependency&gt;
         &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
         &lt;artifactId&gt;spring-cloud-starter-netflix-eureka-client&lt;/artifactId&gt;
@@ -326,14 +367,22 @@ Spring Boot Actuator, Spring Boot DevTools, Eureka Discovery Client, Zuul
 <div id="include-codes" class="section level2">
 <h2>2.3 Include Codes</h2>
 <p>In this section we will basically modify contents under <strong>src/main/java</strong> (where actual codes reside) and <strong>src/main/resources</strong> (where environment variables or configuration happen). Under src/main/java, it should already contain a package (ex. com.demo.microservices.currencyconversionservice) and it has a file named <strong>..Application.java</strong>. It is the main function for the program and where to start running.</p>
-<p>Now you can copy codes from the github and setup accordingly for your project. I will not go through details in the code since it is basically understanding java and spring framework which is not the scope of this tutorial.</p>
-<p>Now do the same for each <strong>application.yml</strong> files. You can read through yaml files fairly easily since it is configuration and human-friendly. Basically, each one will have <strong>spring.application.name</strong>, <strong>server.port</strong>, and a Eureka configuration.</p>
+<p>Now you can copy codes from the <a href="https://github.com/NinoX-RD/DevPaul/tree/main/java-spring-demo-p1">github</a> and setup accordingly for your project. I will not go through details in the code since it is basically understanding java and spring framework which is not the scope of this tutorial.</p>
+<p>Now do the same for each <strong>application.yml</strong> files. You can read through yaml files fairly easily since it is configuration and human-friendly. Basically, each one will have spring.application.name, server.port, and a Eureka configuration.</p>
 <p>One last thing in src/main/resources under currency exchange service, copy <strong>data.sql</strong>. It will make sure the sql command is included when running the application.</p>
 </div>
 <div id="running-in-eclipse" class="section level2">
 <h2>2.4 Running in Eclipse</h2>
-<p>Navigate to <strong>..Application.java</strong> in each project and click <strong>Run as Java Application</strong>. The order is better as follows: Eureka -&gt; API Gateway -&gt; Currency Exchange -&gt; Currency Conversion. But it is not required. It may take a while, but should be quick, for all services to register with Eureka.</p>
+<ol style="list-style-type: decimal">
+<li>Navigate to <strong>..Application.java</strong> in each project</li>
+<li>click <strong>Run as</strong> -&gt; <strong>Java Application</strong></li>
+</ol>
+<p>The order is better as follows: Eureka -&gt; API Gateway -&gt; Currency Exchange -&gt; Currency Conversion. But it is not required. It may take a while, but should be quick, for all services to register with Eureka.</p>
 <p>Here is the list of url for checking the service is properly open.</p>
+<p><strong>Eureka</strong>:</p>
+<ul>
+<li><a href="http://localhost:8761/">http://localhost:8761/</a></li>
+</ul>
 <p><strong>Currency Exchange Service</strong>:</p>
 <ul>
 <li><a href="http://localhost:8000/currency-exchange/from/USD/to/TWD">http://localhost:8000/currency-exchange/from/USD/to/TWD</a></li>
@@ -343,31 +392,41 @@ Spring Boot Actuator, Spring Boot DevTools, Eureka Discovery Client, Zuul
 <li><p><a href="http://localhost:8100/currency-converter/from/USD/to/TWD/quantity/10">http://localhost:8100/currency-converter/from/USD/to/TWD/quantity/10</a></p></li>
 <li><p><a href="http://localhost:8100/currency-converter-feign/from/USD/to/TWD/quantity/10">http://localhost:8100/currency-converter-feign/from/USD/to/TWD/quantity/10</a></p></li>
 </ul>
-<p><strong>Eureka</strong>:</p>
-<ul>
-<li><a href="http://localhost:8761/">http://localhost:8761/</a></li>
-</ul>
 <p><strong>API Gateway</strong>:</p>
 <ul>
 <li><p><a href="http://localhost:8765/currency-exchange-service/currency-exchange/from/USD/to/TWD">http://localhost:8765/currency-exchange-service/currency-exchange/from/USD/to/TWD</a></p></li>
 <li><p><a href="http://localhost:8765/currency-conversion-service/currency-converter/from/USD/to/TWD/quantity/10">http://localhost:8765/currency-conversion-service/currency-converter/from/USD/to/TWD/quantity/10</a></p></li>
 <li><p><a href="http://localhost:8765/currency-conversion-service/currency-converter-feign/from/USD/to/TWD/quantity/10">http://localhost:8765/currency-conversion-service/currency-converter-feign/from/USD/to/TWD/quantity/10</a></p></li>
 </ul>
-<p>Now since we include Ribbon as client side load balancing, we can test by adding more port for <strong>currency exchange serivce</strong>. Now click currency-exchange-service -&gt; Run as -&gt; Run Configurations. Under <strong>Java Application</strong>, create 3 copies with different name (differentiate by port number). In Arguments tab, add <strong>-Dserver.port=8000, -Dserver.port=8001, -Dserver.port=8002</strong> in the VM arguments section.</p>
+<p>Now since we include Ribbon as client side load balancing, we can test by adding more port for <strong>currency exchange serivce</strong>.</p>
+<ol style="list-style-type: decimal">
+<li>Click currency-exchange-service -&gt; Run as -&gt; Run Configurations.</li>
+<li>Under <strong>Java Application</strong>, create 3 copies by right click and duplicate <strong>CurrencyExchangeServiceApplication</strong>.</li>
+<li>Change Name to CurrencyExchangeServiceApplication8000, CurrencyExchangeServiceApplication8001, and CurrencyExchangeServiceApplication8002 respectively.</li>
+<li>For each one, add <strong>-Dserver.port=8000, -Dserver.port=8001, -Dserver.port=8002</strong> accordingly in the VM arguments section in Arguments tab.</li>
+</ol>
 <p>** Program arguments are arguments passed to your program and available in the args array of your main method</p>
 <p>** VM arguments are passed to the virtual machine and are designed to instruct the VM to do something. You can do things like control the heap size, etc. They can be accessed by your program via a call to System.getProperty().</p>
 <p>Now you can restart the program and test if the port change or see if Eureka register three copies of currency exchange service under different port number.</p>
+<p>Every time to restart the program, be sure to properly close previous running instances. In Eclipse, click <strong>Terminate</strong> icon (a red square stop sign in console section).</p>
 </div>
 </div>
 <div id="dockerize" class="section level1">
 <h1>3 Dockerize</h1>
-<p>Before containerization, you have to build the jar files through one of two ways: direct maven command or through Eclipse. First option requires installation of maven library through command line. We will use second option since it is built in the Eclipse. For each project, under pom.xml click <strong>Maven build</strong> -&gt; type <strong>clean package</strong> in Goals -&gt; Run. Now the jar files will be created in the target folders and will be used to build docker images.</p>
-<p>In each of project, create a <strong>Dockerfile</strong>. At the root of the <strong>demo</strong>, create docker-compose.yml. Copy the contents and run the following command:</p>
+<p>Before containerization, you have to build the jar files through one of two ways: direct maven command or through Eclipse. First option requires installation of maven library through command line. We will use second option since it is built in the Eclipse.</p>
+<ol style="list-style-type: decimal">
+<li>For each project, under pom.xml click <strong>Run as</strong> -&gt; <strong>Maven build…</strong> -&gt; type <strong>clean package -DskipTests</strong> in Goals -&gt; Run. (We will skip Testing cycle in this project)</li>
+<li>Now the jar files will be created in the target folders and will be used to build docker images.</li>
+<li>Create a <strong>Dockerfile</strong> in each project. And in <strong>demo</strong> directory, create a <strong>docker-compose.yml</strong> file.</li>
+<li>Copy the contents and run the following command:</li>
+</ol>
 <pre class="docker"><code>docker-compose up</code></pre>
 <p>It may take 3-5 minutes for the applications to fully load up. The first URL under Currency Conversion Service and the second URL under API Gateway above indicated will <strong>not</strong> work.</p>
-<p>** If you were using Java 11 for the project, you have to change the version of based image in each of the Dockerfile, for example:</p>
-<pre class="text"><code>From adoptopenjdk/openjdk11:alpine</code></pre>
+</div>
+<div id="discussion-and-problems" class="section level1">
+<h1>4 Discussion and Problems</h1>
 <p>Now docker compose may have an elegant way to do the client-side load balancing, but for now I have not figured out other than create different images. Even still, it is not the tool for scaling up. Therefore, in the future, we need to introduce Kubernetes or Docker Swarm to do the job with many other functionality.</p>
+<p>Second, usually we will not be access directly to the service (only through gateway). However, it is much more complicated than current setup. There are two ways to make this happen: 1. It is handled by implementing proper OAuth server wherein only your API gateway will handle the token validation. Any direct call to microservice will not have proper token exchange and hence requests will be aborted. 2. Firewall blocking or IP whitelisting</p>
 </div>
 
 
