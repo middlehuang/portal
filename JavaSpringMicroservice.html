@@ -248,13 +248,14 @@ div.tocify {
 
 <div id="setup" class="section level1">
 <h1>1 Setup</h1>
-<p>This demo project is to demonstrate the use of basic functionality of Eclipse and docker to develop a fast-deliverable stand-alone Spring-based application. The technology used in the development of Java web application will be Spring Framework which includes Spring Boot and Spring Cloud. So before proceed to the next section, make sure install Eclipse and docker in your local environment. Since this demo is focus on the building of the project and not on actual coding, the source will be on <a href="https://github.com/NinoX-RD/DevPaul/tree/main/java-spring-demo-p1">github</a>. Again, for the purpose of building this project, I recommend not download the entire package rather just specific files or even copy code and paste to where needs be. Build the thing from ground up by yourself.</p>
+<p>This demo project is to demonstrate the use of basic functionality of Eclipse and docker to develop a fast-deliverable stand-alone Spring-based application. The technology used in the development of Java web application will be Spring Framework which includes Spring Boot and Spring Cloud. So before proceed to the next section, make sure install Eclipse and docker in your local environment. Since this demo is focus on the building of the project and not on actual coding, the source will be on <a href="https://github.com/NinoX-RD/DevPaul/tree/master/java-spring-demo-p1">github</a>. Again, for the purpose of building this project, I recommend not download the entire package rather just specific files or even copy code and paste to where needs be. Build the thing from ground up by yourself.</p>
 <p>Here are the the suggested requirements for this build and the actual built version:</p>
 <ul>
 <li>Java 8 (openjdk 8 version 1.8.0_282)</li>
 <li>Spring Boot 2.3 (Spring Boot 2.3.9.RELEASE)</li>
 <li>Tomcat 9 (Apache Tomcat 9.0.43) which comes with Spring Boot</li>
 <li>Docker (Docker version 20.10.6, build 370c289)</li>
+<li>Node.js (v14.17.0)</li>
 </ul>
 <p>** For reference, here is a website for download Java 8: <a href="https://adoptopenjdk.net" class="uri">https://adoptopenjdk.net</a> and steps to setup Eclipse compiler.</p>
 <ol style="list-style-type: decimal">
@@ -367,7 +368,7 @@ Spring Boot Actuator, Spring Boot DevTools, Eureka Discovery Client, Zuul
 <div id="include-codes" class="section level2">
 <h2>2.3 Include Codes</h2>
 <p>In this section we will basically modify contents under <strong>src/main/java</strong> (where actual codes reside) and <strong>src/main/resources</strong> (where environment variables or configuration happen). Under src/main/java, it should already contain a package (ex. com.demo.microservices.currencyconversionservice) and it has a file named <strong>..Application.java</strong>. It is the main function for the program and where to start running.</p>
-<p>Now you can copy codes from the <a href="https://github.com/NinoX-RD/DevPaul/tree/main/java-spring-demo-p1">github</a> and setup accordingly for your project. I will not go through details in the code since it is basically understanding java and spring framework which is not the scope of this tutorial.</p>
+<p>Now you can copy codes from the <a href="https://github.com/NinoX-RD/DevPaul/tree/master/java-spring-demo-p1">github</a> and setup accordingly for your project. I will not go through details in the code since it is basically understanding java and spring framework which is not the scope of this tutorial.</p>
 <p>Now do the same for each <strong>application.yml</strong> files. You can read through yaml files fairly easily since it is configuration and human-friendly. Basically, each one will have spring.application.name, server.port, and a Eureka configuration.</p>
 <p>One last thing in src/main/resources under currency exchange service, copy <strong>data.sql</strong>. It will make sure the sql command is included when running the application.</p>
 </div>
@@ -401,8 +402,42 @@ Spring Boot Actuator, Spring Boot DevTools, Eureka Discovery Client, Zuul
 <p>Every time to restart the program, be sure to properly close previous running instances. In Eclipse, click <strong>Terminate</strong> icon (a red square stop sign in console section).</p>
 </div>
 </div>
+<div id="front-end" class="section level1">
+<h1>3 Front End</h1>
+<p>In order to run front end with javascript, we need Node.js which is an open-source runtime environment. When using Node.js, you’ll also need to use Node Package Manager, or npm for short. npm is a package management framework for Node.js. It provides a command line utility tool to install Node.js libraries and manage their versions and dependencies. There are several ways to install the tools, here we will use Node version Manager (nvm), which is a bash script to manage multiple active Node.js versions, to install Node.js and npm. It is also the recommended way.</p>
+<ol style="list-style-type: decimal">
+<li>Open new terminal window.</li>
+<li>Run nvm install script. Running the following command downloads a script and runs it. The script clones the nvm repository to ~/.nvm, and attempts to add the source lines from the snippet to the correct profile file (see <a href="https://github.com/nvm-sh/nvm" class="uri">https://github.com/nvm-sh/nvm</a>)</li>
+</ol>
+<pre class="text"><code>  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash</code></pre>
+<ol start="3" style="list-style-type: decimal">
+<li>Reload the shell configuration by using the following command.</li>
+</ol>
+<pre class="text"><code>  source ~/.zshrc (if running zsh)
+or
+  source ~/.bashrc (if running bash)</code></pre>
+<ol start="4" style="list-style-type: decimal">
+<li>Verify the installation</li>
+</ol>
+<pre class="text"><code>  command -v nvm</code></pre>
+<ol start="5" style="list-style-type: decimal">
+<li>This should print <strong>nvm</strong> if the installation was successful.</li>
+<li>Use nvm to install Node.js.</li>
+</ol>
+<pre class="text"><code>  nvm install v14.17.0 (should be the latest LTS)
+  nvm use v14.17.0</code></pre>
+<ol start="7" style="list-style-type: decimal">
+<li>Finally, use nvm to install NPM</li>
+</ol>
+<pre class="text"><code>  nvm install-latest-npm</code></pre>
+<p>Now we can download entire <strong>reactjs</strong> folder from <a href="https://github.com/NinoX-RD/DevPaul/tree/master/java-spring-demo-p1">github</a> and put under your root folder. Then navigate inside <strong>reactjs/reactfrontend</strong>.</p>
+<ol style="list-style-type: decimal">
+<li>run <strong>npm install</strong>. It will install dependencies according to json files.</li>
+<li>run <strong>npm start</strong> to start the front end server.</li>
+</ol>
+</div>
 <div id="dockerize" class="section level1">
-<h1>3 Dockerize</h1>
+<h1>4 Dockerize</h1>
 <p>Before containerization, you have to build the jar files through one of two ways: direct maven command or through Eclipse. First option requires installation of maven library through command line. We will use second option since it is built in the Eclipse.</p>
 <ol style="list-style-type: decimal">
 <li>For each project, under pom.xml click <strong>Run as</strong> -&gt; <strong>Maven build…</strong> -&gt; type <strong>clean package -DskipTests</strong> in Goals -&gt; Run. (We will skip Testing cycle in this project)</li>
@@ -414,9 +449,13 @@ Spring Boot Actuator, Spring Boot DevTools, Eureka Discovery Client, Zuul
 <p>It may take 3-5 minutes for the applications to fully load up.</p>
 </div>
 <div id="discussion-and-problems" class="section level1">
-<h1>4 Discussion and Problems</h1>
+<h1>5 Discussion and Problems</h1>
 <p>Now docker compose may have an elegant way to do the client-side load balancing, but for now I have not figured out other than create different images. Even still, it is not the tool for scaling up. Therefore, in the future, we need to introduce Kubernetes or Docker Swarm to do the job with many other functionality.</p>
-<p>Second, usually we will not be access directly to the service (only through gateway). However, it is much more complicated than current setup. There are two ways to make this happen: 1. It is handled by implementing proper OAuth server wherein only your API gateway will handle the token validation. Any direct call to microservice will not have proper token exchange and hence requests will be aborted. 2. Firewall blocking or IP whitelisting</p>
+<p>Second, usually we will not be access directly to the service (only through gateway). However, it is much more complicated than current setup. There are two ways to make this happen:</p>
+<ol style="list-style-type: decimal">
+<li>It is handled by implementing proper OAuth server wherein only your API gateway will handle the token validation. Any direct call to microservice will not have proper token exchange and hence requests will be aborted.</li>
+<li>Firewall blocking or IP whitelisting</li>
+</ol>
 </div>
 
 
