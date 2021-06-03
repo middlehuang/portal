@@ -407,9 +407,15 @@ Spring Boot Actuator, Spring Boot DevTools, Eureka Discovery Client, Zuul
 <p>In order to run front end with javascript, we need Node.js which is an open-source runtime environment. When using Node.js, you’ll also need to use Node Package Manager, or npm for short. npm is a package management framework for Node.js. It provides a command line utility tool to install Node.js libraries and manage their versions and dependencies. There are several ways to install the tools, here we will use Node version Manager (nvm), which is a bash script to manage multiple active Node.js versions, to install Node.js and npm. It is also the recommended way.</p>
 <ol style="list-style-type: decimal">
 <li>Open new terminal window.</li>
-<li>Run nvm install script. Running the following command downloads a script and runs it. The script clones the nvm repository to ~/.nvm, and attempts to add the source lines from the snippet to the correct profile file (see <a href="https://github.com/nvm-sh/nvm" class="uri">https://github.com/nvm-sh/nvm</a>)</li>
+<li>Run nvm install script. Running the following command downloads a script and runs it. The script clones the nvm repository to ~/.nvm, and attempts to add the source lines from the snippet to the correct profile file</li>
 </ol>
 <pre class="text"><code>  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash</code></pre>
+<p>** If you’re using mac and run into problem, please see <strong>Troubleshooting on macOS</strong> from <a href="https://github.com/nvm-sh/nvm" class="uri">https://github.com/nvm-sh/nvm</a>.</p>
+<pre><code>i. Since OS X 10.9, /usr/bin/git has been preset by Xcode command line tools, which means we can&#39;t properly detect if Git is installed or not. You need to manually install the Xcode command line tools before running the install script:
+
+          xcode-select --install
+          
+ii. If you use bash, the previous default shell, your system may not have a .bash_profile file where the command is set up. Create one with touch ~/.bash_profile and run the install script again. Then, run source ~/.bash_profile to pick up the nvm command.</code></pre>
 <ol start="3" style="list-style-type: decimal">
 <li>Reload the shell configuration by using the following command.</li>
 </ol>
@@ -430,11 +436,15 @@ or
 <li>Finally, use nvm to install NPM</li>
 </ol>
 <pre class="text"><code>  nvm install-latest-npm</code></pre>
-<p>Now we can download entire <strong>reactjs</strong> folder from <a href="https://github.com/NinoX-RD/DevPaul/tree/master/java-spring-demo-p1">github</a> and put under your root folder. Then navigate inside <strong>reactjs/reactfrontend</strong>.</p>
+<p>Now we can download entire <strong>reactjs</strong> folder from <a href="https://github.com/NinoX-RD/DevPaul/tree/master/java-spring-demo-p1">github</a> and put under your root folder. Then navigate inside <strong>reactjs/reactfrontend</strong> through command line.</p>
 <ol style="list-style-type: decimal">
 <li>run <strong>npm install</strong>. It will install dependencies according to json files.</li>
 <li>run <strong>npm start</strong> to start the front end server.</li>
 </ol>
+<p><strong>FrontEnd</strong>:</p>
+<ul>
+<li><a href="http://localhost:3000/">http://localhost:3000/</a></li>
+</ul>
 </div>
 <div id="dockerize" class="section level1">
 <h1>4 Dockerize</h1>
