@@ -258,8 +258,7 @@ pre code {
 <ul>
 <li><a href="#debian9-安裝"><span class="toc-section-number">1.1</span> Debian9 安裝</a></li>
 <li><a href="#手動編譯核心"><span class="toc-section-number">1.2</span> 手動編譯核心</a></li>
-<li><a href="#macbook-鍵盤驅動"><span class="toc-section-number">1.3</span> macbook 鍵盤驅動</a></li>
-<li><a href="#macbook-touchbar驅動"><span class="toc-section-number">1.4</span> macbook touchbar驅動</a></li>
+<li><a href="#mac-配件驅動"><span class="toc-section-number">1.3</span> mac 配件驅動</a></li>
 </ul></li>
 </ul>
 </div>
@@ -500,13 +499,136 @@ Figure 1.17: 新增 PXA2xx 模組
 <p>執行 <code>make -j $(nproc)</code> 就能開始編譯核心，這個步驟大約會花費一個小時，接著執行 <code>make modules_install</code> 就能安裝核心模組，完成後再執行 <code>make install</code> 進行核心的安裝，安裝完成後，grub 選單預設值會自動更新</p>
 </div>
 </div>
-<div id="macbook-鍵盤驅動" class="section level2" number="1.3">
-<h2><span class="header-section-number">1.3</span> macbook 鍵盤驅動</h2>
-<p>下載<a href="https://github.com/cb22/macbook12-spi-driver">這裏</a>的資料夾，用 <code>make</code> 和 <code>make install</code> 安裝後重新開機</p>
+<div id="mac-配件驅動" class="section level2" number="1.3">
+<h2><span class="header-section-number">1.3</span> mac 配件驅動</h2>
+<p>以下使用 github 提供的驅動程式來驅動相關 mac 配件，所以需要先安裝 git</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>apt<span class="sc">-</span>get install git</span></code></pre></div>
+<div id="macbook-鍵盤驅動" class="section level3" number="1.3.1">
+<h3><span class="header-section-number">1.3.1</span> macbook 鍵盤驅動</h3>
+<p>輸入以下指令安裝基本的觸控板與鍵盤驅動</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>cd <span class="sc">/</span>tmp</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>git clone https<span class="sc">:</span><span class="er">//</span>github.com<span class="sc">/</span>cb22<span class="sc">/</span>macbook12<span class="sc">-</span>spi<span class="sc">-</span>driver.git</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>cd macbook12<span class="sc">-</span>spi<span class="sc">-</span>driver</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>make</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>make install</span></code></pre></div>
+<p>重新開機後即可使用 mac 觸控板與鍵盤</p>
 </div>
-<div id="macbook-touchbar驅動" class="section level2" number="1.4">
-<h2><span class="header-section-number">1.4</span> macbook touchbar驅動</h2>
-<p>下載<a href="https://github.com/roadrunner2/macbook12-spi-driver">這裏</a>的資料夾，用 <code>make</code> 和 <code>make install</code> 安裝後重新開機</p>
+<div id="mac-觸控板進階驅動" class="section level3" number="1.3.2">
+<h3><span class="header-section-number">1.3.2</span> mac 觸控板進階驅動</h3>
+<p>基本 mac 觸控板只支援單擊左鍵和雙指捲動頁面，如果要設定雙擊右鍵等等，你需要安裝進階驅動程式</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 確認 Xorg 為此指令的其中一個輸出後繼續</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>ps <span class="sc">-</span>e <span class="sc">|</span> grep X</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 安裝必要套件</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>apt<span class="sc">-</span>get install pkg<span class="sc">-</span>config libmtdev<span class="sc">-</span>dev mtdev<span class="sc">-</span>tools xserver<span class="sc">-</span>xorg<span class="sc">-</span>dev xutils<span class="sc">-</span>dev</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 將你的使用者帳號加入至 input 群組以啟用驅動程式設定</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>adduser <span class="st">&quot;`whoami`&quot;</span> input</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="co"># 進行驅動程式編譯與安裝</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>cd <span class="sc">/</span>tmp</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>git clone https<span class="sc">:</span><span class="er">//</span>github.com<span class="sc">/</span>p2rkw<span class="sc">/</span>xf86<span class="sc">-</span>input<span class="sc">-</span>mtrack.git</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>cd xf86<span class="sc">-</span>input<span class="sc">-</span>mtrack</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>.<span class="sc">/</span>configure <span class="sc">--</span>with<span class="sc">-</span>xorg<span class="sc">-</span>module<span class="sc">-</span>dir<span class="ot">=</span><span class="er">/</span>usr<span class="sc">/</span>lib<span class="sc">/</span>xorg<span class="sc">/</span>modules</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>make</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>make install</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a><span class="co"># 建立組態檔</span></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>touch <span class="sc">/</span>usr<span class="sc">/</span>share<span class="sc">/</span>X11<span class="sc">/</span>xorg.conf.d<span class="sc">/</span><span class="dv">50</span><span class="sc">-</span>mtrack.conf</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a><span class="co"># 開啟文字編輯器進行編輯</span></span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>edit <span class="sc">/</span>usr<span class="sc">/</span>share<span class="sc">/</span>X11<span class="sc">/</span>xorg.conf.d<span class="sc">/</span><span class="dv">50</span><span class="sc">-</span>mtrack.conf</span></code></pre></div>
+<p>複製以下文字至 50-mtrack.conf</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Install mtrack driver 0.5.0++</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Save this file to /usr/share/X11/xorg.conf.d/50-mtrack.conf</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co"># This config is specialized for MacBook Air 2012 (5,2)</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>Section <span class="st">&quot;InputClass&quot;</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>        MatchIsTouchpad <span class="st">&quot;on&quot;</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>        Identifier      <span class="st">&quot;Touchpads&quot;</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>        MatchDevicePath <span class="st">&quot;/dev/input/event*&quot;</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>        Driver          <span class="st">&quot;mtrack&quot;</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>        <span class="co"># The faster you move, the more distance pointer will travel, using &quot;polynomial&quot; profile</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>        Option          <span class="st">&quot;AccelerationProfile&quot;</span> <span class="st">&quot;2&quot;</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Tweak cursor movement speed with this</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>        Option          <span class="st">&quot;Sensitivity&quot;</span> <span class="st">&quot;0.05&quot;</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Pressure at which a finger is detected as a touch</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>        Option          <span class="st">&quot;FingerHigh&quot;</span> <span class="st">&quot;5&quot;</span></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Pressure at which a finger is detected as a release</span></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>        Option          <span class="st">&quot;FingerLow&quot;</span> <span class="st">&quot;5&quot;</span></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>        <span class="co"># I often use thumb to press down the physical button, so let&#39;s not ignore it</span></span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>        Option          <span class="st">&quot;IgnoreThumb&quot;</span> <span class="st">&quot;false&quot;</span></span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>        Option          <span class="st">&quot;ThumbRatio&quot;</span> <span class="st">&quot;70&quot;</span></span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>        Option          <span class="st">&quot;ThumbSize&quot;</span> <span class="st">&quot;25&quot;</span></span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Ignore palm, with palm takes up to 30% of your touch pad</span></span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>        Option          <span class="st">&quot;IgnorePalm&quot;</span> <span class="st">&quot;true&quot;</span></span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>        Option          <span class="st">&quot;PalmSize&quot;</span> <span class="st">&quot;30&quot;</span></span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Trigger mouse button when tap: 1 finger - left click, 2 finger - right click, 3 - middle click</span></span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>        Option          <span class="st">&quot;TapButton1&quot;</span> <span class="st">&quot;1&quot;</span></span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>        Option          <span class="st">&quot;TapButton2&quot;</span> <span class="st">&quot;3&quot;</span></span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>        Option          <span class="st">&quot;TapButton3&quot;</span> <span class="st">&quot;2&quot;</span></span>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a>        Option          <span class="st">&quot;TapButton4&quot;</span> <span class="st">&quot;0&quot;</span></span>
+<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>        Option          <span class="st">&quot;ClickTime&quot;</span> <span class="st">&quot;25&quot;</span></span>
+<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Disable tap-to-drag, we&#39;re using three finger drag instead</span></span>
+<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a>        Option          <span class="st">&quot;TapDragEnable&quot;</span> <span class="st">&quot;false&quot;</span></span>
+<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a>        <span class="co"># While touching the touch pad with # fingers, press the touchpad physical click button</span></span>
+<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a>        Option          <span class="st">&quot;ClickFinger1&quot;</span> <span class="st">&quot;1&quot;</span></span>
+<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a>        Option          <span class="st">&quot;ClickFinger2&quot;</span> <span class="st">&quot;3&quot;</span></span>
+<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a>        Option          <span class="st">&quot;ClickFinger3&quot;</span> <span class="st">&quot;2&quot;</span></span>
+<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a>        Option          <span class="st">&quot;ButtonMoveEmulate&quot;</span> <span class="st">&quot;false&quot;</span></span>
+<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a>        Option          <span class="st">&quot;ButtonIntegrated&quot;</span> <span class="st">&quot;true&quot;</span></span>
+<span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a>        <span class="co"># The momentum after scroll fingers released</span></span>
+<span id="cb12-39"><a href="#cb12-39" aria-hidden="true" tabindex="-1"></a>        Option          <span class="st">&quot;ScrollCoastDuration&quot;</span> <span class="st">&quot;300&quot;</span></span>
+<span id="cb12-40"><a href="#cb12-40" aria-hidden="true" tabindex="-1"></a>        Option          <span class="st">&quot;ScrollCoastEnableSpeed&quot;</span> <span class="st">&quot;.1&quot;</span></span>
+<span id="cb12-41"><a href="#cb12-41" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Natural scrolling with two fingers</span></span>
+<span id="cb12-42"><a href="#cb12-42" aria-hidden="true" tabindex="-1"></a>        Option          <span class="st">&quot;ScrollSmooth&quot;</span> <span class="st">&quot;true&quot;</span></span>
+<span id="cb12-43"><a href="#cb12-43" aria-hidden="true" tabindex="-1"></a>        Option          <span class="st">&quot;ScrollUpButton&quot;</span> <span class="st">&quot;5&quot;</span></span>
+<span id="cb12-44"><a href="#cb12-44" aria-hidden="true" tabindex="-1"></a>        Option          <span class="st">&quot;ScrollDownButton&quot;</span> <span class="st">&quot;4&quot;</span></span>
+<span id="cb12-45"><a href="#cb12-45" aria-hidden="true" tabindex="-1"></a>        Option          <span class="st">&quot;ScrollLeftButton&quot;</span> <span class="st">&quot;7&quot;</span></span>
+<span id="cb12-46"><a href="#cb12-46" aria-hidden="true" tabindex="-1"></a>        Option          <span class="st">&quot;ScrollRightButton&quot;</span> <span class="st">&quot;6&quot;</span></span>
+<span id="cb12-47"><a href="#cb12-47" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Tweak scroll sensitivity with ScrollDistance, don&#39;t touch ScrollSensitivity</span></span>
+<span id="cb12-48"><a href="#cb12-48" aria-hidden="true" tabindex="-1"></a>        Option          <span class="st">&quot;ScrollDistance&quot;</span> <span class="st">&quot;250&quot;</span></span>
+<span id="cb12-49"><a href="#cb12-49" aria-hidden="true" tabindex="-1"></a>        Option          <span class="st">&quot;ScrollClickTime&quot;</span> <span class="st">&quot;10&quot;</span></span>
+<span id="cb12-50"><a href="#cb12-50" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Three finger drag</span></span>
+<span id="cb12-51"><a href="#cb12-51" aria-hidden="true" tabindex="-1"></a>        Option          <span class="st">&quot;SwipeDistance&quot;</span> <span class="st">&quot;1&quot;</span></span>
+<span id="cb12-52"><a href="#cb12-52" aria-hidden="true" tabindex="-1"></a>        Option          <span class="st">&quot;SwipeLeftButton&quot;</span> <span class="st">&quot;1&quot;</span></span>
+<span id="cb12-53"><a href="#cb12-53" aria-hidden="true" tabindex="-1"></a>        Option          <span class="st">&quot;SwipeRightButton&quot;</span> <span class="st">&quot;1&quot;</span></span>
+<span id="cb12-54"><a href="#cb12-54" aria-hidden="true" tabindex="-1"></a>        Option          <span class="st">&quot;SwipeUpButton&quot;</span> <span class="st">&quot;1&quot;</span></span>
+<span id="cb12-55"><a href="#cb12-55" aria-hidden="true" tabindex="-1"></a>        Option          <span class="st">&quot;SwipeDownButton&quot;</span> <span class="st">&quot;1&quot;</span></span>
+<span id="cb12-56"><a href="#cb12-56" aria-hidden="true" tabindex="-1"></a>        Option          <span class="st">&quot;SwipeClickTime&quot;</span> <span class="st">&quot;0&quot;</span></span>
+<span id="cb12-57"><a href="#cb12-57" aria-hidden="true" tabindex="-1"></a>        Option          <span class="st">&quot;SwipeSensitivity&quot;</span> <span class="st">&quot;1500&quot;</span></span>
+<span id="cb12-58"><a href="#cb12-58" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Four finger swipe, 8 &amp; 9 are for browsers navigating back and forth respectively</span></span>
+<span id="cb12-59"><a href="#cb12-59" aria-hidden="true" tabindex="-1"></a>        Option          <span class="st">&quot;Swipe4LeftButton&quot;</span> <span class="st">&quot;9&quot;</span></span>
+<span id="cb12-60"><a href="#cb12-60" aria-hidden="true" tabindex="-1"></a>        Option          <span class="st">&quot;Swipe4RightButton&quot;</span> <span class="st">&quot;8&quot;</span></span>
+<span id="cb12-61"><a href="#cb12-61" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Mouse button &gt;= 10 are not used by Xorg, so we&#39;ll map them with xbindkeys and xdotool later</span></span>
+<span id="cb12-62"><a href="#cb12-62" aria-hidden="true" tabindex="-1"></a>        Option          <span class="st">&quot;Swipe4UpButton&quot;</span> <span class="st">&quot;11&quot;</span></span>
+<span id="cb12-63"><a href="#cb12-63" aria-hidden="true" tabindex="-1"></a>        Option          <span class="st">&quot;Swipe4DownButton&quot;</span> <span class="st">&quot;10&quot;</span></span>
+<span id="cb12-64"><a href="#cb12-64" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Mouse buttons triggered by 2-finger pinching gesture</span></span>
+<span id="cb12-65"><a href="#cb12-65" aria-hidden="true" tabindex="-1"></a>        Option          <span class="st">&quot;ScaleDistance&quot;</span> <span class="st">&quot;300&quot;</span></span>
+<span id="cb12-66"><a href="#cb12-66" aria-hidden="true" tabindex="-1"></a>        Option          <span class="st">&quot;ScaleUpButton&quot;</span> <span class="st">&quot;12&quot;</span></span>
+<span id="cb12-67"><a href="#cb12-67" aria-hidden="true" tabindex="-1"></a>        Option          <span class="st">&quot;ScaleDownButton&quot;</span> <span class="st">&quot;13&quot;</span></span>
+<span id="cb12-68"><a href="#cb12-68" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Mouse buttons trigger by 2-finger rotating gesture, disabled to enhance the pinch gesture</span></span>
+<span id="cb12-69"><a href="#cb12-69" aria-hidden="true" tabindex="-1"></a>        Option          <span class="st">&quot;RotateLeftButton&quot;</span> <span class="st">&quot;0&quot;</span></span>
+<span id="cb12-70"><a href="#cb12-70" aria-hidden="true" tabindex="-1"></a>        Option          <span class="st">&quot;RotateRightButton&quot;</span> <span class="st">&quot;0&quot;</span></span>
+<span id="cb12-71"><a href="#cb12-71" aria-hidden="true" tabindex="-1"></a>EndSection</span></code></pre></div>
+<p>你可以客製化其中幾個選項:</p>
+<ul>
+<li>在 <code>Option &quot;Sensitivity&quot; &quot;0.10&quot;</code> 調整指標靈敏度，用 0 到 1 的數字替換 0.1，數值越高，指標移動越多</li>
+<li>在 <code>ScrollDistance</code> 調整雙指捲動靈敏度</li>
+<li>有開啟輕觸點擊，如果要關閉，就把那些 TapButton# 設成 0</li>
+</ul>
+<p>如果你想要了解更多選項，你可以參考<a href="https://github.com/p2rkw/xf86-input-mtrack">作者的說明</a></p>
+<p>儲存檔案後重開機，觸控板會更貼近 mac 設計</p>
+</div>
+<div id="macbook-touchbar驅動" class="section level3" number="1.3.3">
+<h3><span class="header-section-number">1.3.3</span> macbook touchbar驅動</h3>
+<p>輸入以下指令安裝 mac 觸控條驅動，如果複製 git repository 發生錯誤，就將 /tmp 內的 macbook12-spi-driver 刪除後再試一次</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>cd <span class="sc">/</span>tmp</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>git clone https<span class="sc">:</span><span class="er">//</span>github.com<span class="sc">/</span>roadrunner2<span class="sc">/</span>macbook12<span class="sc">-</span>spi<span class="sc">-</span>driver.git</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>cd macbook12<span class="sc">-</span>spi<span class="sc">-</span>driver</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>make</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>make install</span></code></pre></div>
+<p>重新開機後即可使用 mac 觸控條</p>
+</div>
 </div>
 </div>
 
