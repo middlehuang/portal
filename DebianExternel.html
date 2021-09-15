@@ -384,10 +384,14 @@ Figure 3.9: 選擇桌面環境
 </div>
 <div id="安裝基本驅動程式" class="section level1" number="5">
 <h1><span class="header-section-number">5</span> 安裝基本驅動程式</h1>
-<p>在完成 Debian 安裝後，由於螢幕的驅動程式仍不存在，正常啟動 Debian 是行不通的，所以要先在 grub 選單選擇進階選項，以 rescue mode 開機，在最後的畫面輸入管理員密碼以超級使用者身份登入</p>
+<p>在完成 Debian 安裝後，由於螢幕的驅動程式仍不存在，正常啟動 Debian 是行不通的，所以:</p>
+<ul>
+<li>Debian 9 : 在一般 Debian 9 的 grubb 選項按下 <code>e</code> 按鍵，在倒數第三行 <code>linux ... ro  quiet</code> 改成 <code>linux ... ro nomodeset quiet</code> 後按下 <code>F10</code> 開機</li>
+<li>Debiann 10 : 在 grub 選單選擇 advanced option，選擇以 recovery mode 開機，在最後的畫面輸入管理員密碼以超級使用者身份登入</li>
+</ul>
 <div id="usb-掛載至-debian-方法" class="section level2" number="5.1">
 <h2><span class="header-section-number">5.1</span> Usb 掛載至 Debian 方法</h2>
-<p>之所以要為此做說明，是因為接下來驅動程式的安裝檔是從隨身碟匯入，需要指令使系統可以讀取隨身碟檔案</p>
+<p>接下來驅動程式的安裝檔是從隨身碟匯入，需要指令使系統可以讀取隨身碟檔案</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 確認隨身碟掛載位置，以本例而言為 /dev/sdb</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>fdisk <span class="sc">-</span>l</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -404,7 +408,7 @@ Figure 3.9: 選擇桌面環境
 <h2><span class="header-section-number">5.2</span> firmware-amd-graphics 螢幕驅動程式安裝</h2>
 <p>先在其他地方下載 amd 螢幕驅動程式，分為 <a href="http://security.debian.org/debian-security/pool/updates/non-free/f/firmware-nonfree/firmware-amd-graphics_20190114-2~deb9u1_all.deb">Debian9</a> 和 <a href="http://ftp.tw.debian.org/debian/pool/non-free/f/firmware-nonfree/firmware-amd-graphics_20190114-2_all.deb">Debian10</a> 版本，將檔案放入隨身碟，依上述方法掛載至 Debian 內，輸入以下指令進行安裝</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>dpkg <span class="sc">-</span>i <span class="sc">&lt;</span>amd 驅動程式.deb 位置<span class="sc">&gt;</span></span></code></pre></div>
-<p>完成螢幕驅動程式安裝後，你就能正常進入 Debian</p>
+<p>完成螢幕驅動程式安裝後，之後就能在 grub 選單正常進入 Debian</p>
 </div>
 <div id="broadcom-bcm43602-802.11ac-14e443ba-驅動程式" class="section level2" number="5.3">
 <h2><span class="header-section-number">5.3</span> Broadcom BCM43602 802.11ac [14e4:43ba] 驅動程式</h2>
@@ -467,6 +471,7 @@ Figure 5.3: brcm43602 設定
 <p>別忘了在完成鏡相站的設定後更新軟體</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>apt<span class="sc">-</span>get update</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>apt<span class="sc">-</span>get upgrade</span></code></pre></div>
+<p>如果中途出現套件更新訊息，按 <code>q</code> 鍵離開並繼續更新</p>
 </div>
 <div id="手動編譯核心" class="section level1" number="7">
 <h1><span class="header-section-number">7</span> 手動編譯核心</h1>
@@ -496,7 +501,7 @@ Figure 5.3: brcm43602 設定
 <h2><span class="header-section-number">7.2</span> 安裝必要套件</h2>
 <p>使用指令安裝必要套件</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 安裝編譯核心套件</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>apt<span class="sc">-</span>get install make gcc libncurses<span class="sc">-</span>dev bison flex libelf<span class="sc">-</span>dev libssl<span class="sc">-</span>dev</span></code></pre></div>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>apt<span class="sc">-</span>get install bc build<span class="sc">-</span>essential libncurses<span class="sc">-</span>dev bison flex libelf<span class="sc">-</span>dev libssl<span class="sc">-</span>dev</span></code></pre></div>
 </div>
 <div id="選擇編譯核心模組" class="section level2" number="7.3">
 <h2><span class="header-section-number">7.3</span> 選擇編譯核心模組</h2>
