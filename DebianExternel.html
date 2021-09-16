@@ -538,12 +538,12 @@ Figure 7.1: 新增 PXA2xx 模組
 <p>重新開機後即可使用 mac 觸控板、鍵盤與 touchbar</p>
 <div id="mac-觸控板進階驅動" class="section level2" number="8.1">
 <h2><span class="header-section-number">8.1</span> mac 觸控板進階驅動</h2>
-<p>如果你要進一步設定觸控板，例如移動速度、三鍵拖曳、輕碰觸發等等，你需要安裝進階驅動程式</p>
+<p>如果你要進一步設定觸控板，例如移動速度、三鍵拖曳、輕碰觸發等等，你需要安裝進階驅動程式，但是請先確定桌面環境支援 Xorg (在登入頁面選擇使用者後，選擇齒輪圖示，要看到 GNOME with Xorg 選項)</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 安裝必要套件</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>apt<span class="sc">-</span>get install pkg<span class="sc">-</span>config libmtdev<span class="sc">-</span>dev mtdev<span class="sc">-</span>tools xserver<span class="sc">-</span>xorg<span class="sc">-</span>dev xutils<span class="sc">-</span>dev</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 將你的使用者帳號加入至 input 群組以啟用驅動程式設定</span></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>adduser <span class="st">&quot;`whoami`&quot;</span> input</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>adduser <span class="st">&quot;&lt;你的使用者名稱&gt;&quot;</span> input</span>
 <span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 進行驅動程式編譯與安裝</span></span>
 <span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>cd <span class="sc">/</span>tmp</span>
@@ -557,7 +557,7 @@ Figure 7.1: 新增 PXA2xx 模組
 <span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>touch <span class="sc">/</span>usr<span class="sc">/</span>share<span class="sc">/</span>X11<span class="sc">/</span>xorg.conf.d<span class="sc">/</span><span class="dv">50</span><span class="sc">-</span>mtrack.conf</span>
 <span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a><span class="co"># 開啟文字編輯器進行編輯</span></span>
-<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>edit <span class="sc">/</span>usr<span class="sc">/</span>share<span class="sc">/</span>X11<span class="sc">/</span>xorg.conf.d<span class="sc">/</span><span class="dv">50</span><span class="sc">-</span>mtrack.conf</span></code></pre></div>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>nano <span class="sc">/</span>usr<span class="sc">/</span>share<span class="sc">/</span>X11<span class="sc">/</span>xorg.conf.d<span class="sc">/</span><span class="dv">50</span><span class="sc">-</span>mtrack.conf</span></code></pre></div>
 <p>複製以下文字至 50-mtrack.conf</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Install mtrack driver 0.5.0++</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Save this file to /usr/share/X11/xorg.conf.d/50-mtrack.conf</span></span>
@@ -632,17 +632,17 @@ Figure 7.1: 新增 PXA2xx 模組
 <span id="cb14-71"><a href="#cb14-71" aria-hidden="true" tabindex="-1"></a>EndSection</span></code></pre></div>
 <p>你可以客製化其中幾個選項:</p>
 <ul>
-<li>在 <code>Option &quot;Sensitivity&quot; &quot;0.10&quot;</code> 調整指標靈敏度，用 0 到 1 的數字替換 0.1，數值越高，指標移動越多</li>
+<li>在 <code>Option &quot;Sensitivity&quot; &quot;0.05&quot;</code> 調整指標靈敏度，用 0 到 1 的數字替換 0.05，數值越高，指標移動距離越多</li>
 <li>在 <code>ScrollDistance</code> 調整雙指捲動靈敏度</li>
 <li>有開啟輕觸點擊，如果要關閉，就把那些 TapButton# 設成 0</li>
 </ul>
 <p>如果你想要了解更多選項，你可以參考<a href="https://github.com/p2rkw/xf86-input-mtrack">作者的說明</a></p>
-<p>儲存檔案後重開機，觸控板會更貼近 mac 設計</p>
+<p>儲存檔案後重開機，在登入畫面選擇使用者，點擊齒輪圖示，選擇 <code>GNOME with Xorg</code>，觸控板會依據你的設定驅動</p>
 </div>
 </div>
 <div id="安裝-pantheon-桌面環境" class="section level1" number="9">
 <h1><span class="header-section-number">9</span> 安裝 Pantheon 桌面環境</h1>
-<p>這個桌面環境的好處是，其配置與 mac 相當類似，而且安裝也不難，你只需要根據 Debian9 或 Debian10 依序執行以下指令</p>
+<p>這個桌面環境的好處是，其配置與 mac 相當類似，支援上述進階觸控板設定，而且安裝也不難，你只需要根據 Debian9 或 Debian10 依序執行以下指令</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 安裝必要套件</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>apt<span class="sc">-</span>get install apt<span class="sc">-</span>transport<span class="sc">-</span>https software<span class="sc">-</span>properties<span class="sc">-</span>common wget</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
