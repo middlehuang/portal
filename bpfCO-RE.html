@@ -173,27 +173,449 @@ pre code {
 
 <div id="TOC">
 <ul>
-<li><a href="#將-debian10-升級至-debian11"><span class="toc-section-number">1</span> 將 Debian10 升級至 Debian11</a>
+<li><a href="#bpf-概念簡介"><span class="toc-section-number">1</span> BPF 概念簡介</a>
 <ul>
-<li><a href="#更新-repository-清單"><span class="toc-section-number">1.1</span> 更新 repository 清單</a></li>
-<li><a href="#進行系統更新"><span class="toc-section-number">1.2</span> 進行系統更新</a></li>
+<li><a href="#範例程式碼解說"><span class="toc-section-number">1.1</span> 範例程式碼解說</a></li>
 </ul></li>
-<li><a href="#編譯-bpf-co-re-範例程式碼及驗證"><span class="toc-section-number">2</span> 編譯 bpf CO-RE 範例程式碼及驗證</a>
+<li><a href="#準備主要編譯環境將-debian10-升級至-debian11"><span class="toc-section-number">2</span> 準備主要編譯環境：將 Debian10 升級至 Debian11</a>
 <ul>
-<li><a href="#下載編譯工具"><span class="toc-section-number">2.1</span> 下載編譯工具</a></li>
-<li><a href="#編譯範例程式碼"><span class="toc-section-number">2.2</span> 編譯範例程式碼</a></li>
-<li><a href="#驗證移植性"><span class="toc-section-number">2.3</span> 驗證移植性</a></li>
+<li><a href="#更新-repository-清單"><span class="toc-section-number">2.1</span> 更新 repository 清單</a></li>
+<li><a href="#進行系統更新"><span class="toc-section-number">2.2</span> 進行系統更新</a></li>
 </ul></li>
-<li><a href="#參考資料"><span class="toc-section-number">3</span> 參考資料</a></li>
+<li><a href="#編譯-bpf-co-re-範例程式碼及驗證"><span class="toc-section-number">3</span> 編譯 bpf CO-RE 範例程式碼及驗證</a>
+<ul>
+<li><a href="#下載編譯工具"><span class="toc-section-number">3.1</span> 下載編譯工具</a></li>
+<li><a href="#編譯範例程式碼"><span class="toc-section-number">3.2</span> 編譯範例程式碼</a></li>
+<li><a href="#驗證移植性"><span class="toc-section-number">3.3</span> 驗證移植性</a></li>
+</ul></li>
+<li><a href="#參考資料"><span class="toc-section-number">4</span> 參考資料</a></li>
 </ul>
 </div>
 
-<div id="將-debian10-升級至-debian11" class="section level1" number="1">
-<h1><span class="header-section-number">1</span> 將 Debian10 升級至 Debian11</h1>
+<div id="bpf-概念簡介" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> BPF 概念簡介</h1>
+<ul>
+<li>bpf.c</li>
+<li>userspace</li>
+</ul>
+<p>loader &lt;–(communicate with BPF maps)–&gt; BPF program</p>
+<ul>
+<li><strong>BPF maps</strong> : generic data structures for storing different types of data (hash maps, arrays, event-based structures). They can be shared and accessed by multiple BPF programs. Maps are handled through file descriptors in userspace programs.
+<ul>
+<li>Many maps are key-value based</li>
+<li>some are event-based, meaning that the userspace polls the maps and receives an event when new data is added to the map.</li>
+</ul></li>
+</ul>
+<p>(insert image here)</p>
+<p><strong>tracepoint</strong>: defined in source –(compile)–&gt; kernel or executable, stable between versions. /sys/kernel/debug/tracing/events/(syscalls)<br />
+<strong>probe</strong>: no source modification –(dynamically set)–&gt; target code, update with target code.</p>
+<p>each BPF program can consist of only one function where calls to other functions are not allowed, at least not in the usual way. every BPF program must return an integer, which then decides what action to take based on the returned value (e.g., drop or forward a network packet).</p>
+<ul>
+<li>BPF CO-RE:
+<ul>
+<li>kernel
+<ul>
+<li>BPF Type Format (BTF) /sys/kernel/btf/vmlinux -&gt; vmlinux.h
+<ul>
+<li>this file rarely has to be regenerated, as libbpf will adjust the program with regards to any kernel differences during load time. However, if we were to cross-compile this for a non-x86 architecture, we would most likely need another vmlinux.h header generated on a system with the matching architecture.</li>
+</ul></li>
+</ul></li>
+<li>libbpf
+<ul>
+<li>userspace loaders
+<ul>
+<li>XDP targets</li>
+<li>Linux Security Modules (LSM)</li>
+</ul></li>
+<li>pre-existing observability technologies
+<ul>
+<li>kernel tracepoints</li>
+<li>kprobes</li>
+<li>user tracepoints</li>
+<li>uprobes</li>
+</ul></li>
+<li>functions
+<ul>
+<li>load eBPF programs</li>
+<li>load maps</li>
+<li>set and retrieve data from maps</li>
+</ul></li>
+<li>process relocation data</li>
+<li>bpf_helpers.h: BPF kernel helper functions <a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>
+<ul>
+<li>manipulate maps</li>
+<li>deal with accesses through userspace pointers</li>
+<li>retrieve information about the current process</li>
+</ul></li>
+<li>…</li>
+</ul></li>
+<li>clang
+<ul>
+<li>BPF ELF file + BTF relocations (program access kernel data)</li>
+</ul></li>
+</ul></li>
+<li>BPF app lifecycle
+<ul>
+<li>Open phase &lt;-&gt; obj = <name>__open(): opens and parses the BPF program, maps and global variables
+| can be combined</li>
+<li>Load phase &lt;-&gt; <name>__load(obj): loads the program into the kernel, where it is verified. At this point, maps are initialized with starting values. can be selective</li>
+<li>Attachment phase &lt;-&gt; <name>__attach(obj): attach the BPF program to our target hook point, a system call entry tracepoint. After attaching, the program will start running. can be selective</li>
+<li>Tear down phase &lt;-&gt; <name>__destroy(obj): clean up the program and exit</li>
+</ul></li>
+</ul>
+<div id="範例程式碼解說" class="section level2" number="1.1">
+<h2><span class="header-section-number">1.1</span> 範例程式碼解說</h2>
+<p><a href="https://github.com/sartura/ebpf-core-sample">來源程式碼</a></p>
+<div id="hello" class="section level3" number="1.1.1">
+<h3><span class="header-section-number">1.1.1</span> hello</h3>
+<p>start by writing a BPF program that first attaches to the execve system call. The usual convention is to add a .bpf.c postfix to such files.</p>
+<p>hello.bpf.c:</p>
+<pre class="r"><code>#include &quot;vmlinux.h&quot;
+#define BPF_NO_GLOBAL_DATA 1
+#include &lt;bpf/bpf_helpers.h&gt;
+
+SEC(&quot;tracepoint/syscalls/sys_enter_execve&quot;)
+int tracepoint__syscalls__sys_enter_execve(struct trace_event_raw_sys_enter *ctx)
+
+{
+    bpf_printk(&quot;Hello world!\n&quot;)
+    return 0;
+}
+
+char LICENSE[] SEC(&quot;license&quot;) = &quot;GPL&quot;;</code></pre>
+<p><code>vmlinux.h</code> 可由 linux 提供的套件 <code>bpftool</code> 取得</p>
+<ul>
+<li><strong>SEC()</strong> (bpf_helpers) : places the function below into a special ELF section to let libbpf know where to attach the BPF program (<code>execve syscall</code>, trigger the BPF program on system call entry).
+<ul>
+<li>tracepoint/syscalls/sys_enter_execve &lt;-&gt; <code>/sys/kernel/debug/tracing</code>/events/syscalls/sys_enter_execve.</li>
+</ul></li>
+</ul>
+<p><strong>struct trace_event_raw_sys_enter *ctx</strong> (vmlinux.h) : generic argument received by functions that attach to system call entry points.</p>
+<p><strong>char LICENSE[] SEC(“license”) = “GPL”</strong>: declares the license of the BPF program</p>
+<ul>
+<li><strong>bpf_printk()</strong> (bpf_helpers.h): prints formatted output to the system’s trace pipe in <code>/sys/kernel/debug/tracing/trace_pipe</code>
+<ul>
+<li>由於使用全域變數，而 debian10 的內核太舊不支援此功能，所以加入 <code>#define BPF_NO_GLOBAL_DATA 1</code> 取消它</li>
+</ul></li>
+</ul>
+<p>writing the userspace loader</p>
+<p>hello.c :</p>
+<pre class="r"><code>#include &lt;sys/types.h&gt;
+#include &lt;sys/stat.h&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;sys/resource.h&gt;
+
+#include &lt;bpf/libbpf.h&gt;
+#include &lt;bpf/bpf.h&gt;
+#include &quot;hello.skel.h&quot;
+
+void read_trace_pipe(void)
+{
+    int trace_fd;
+
+    trace_fd = open(&quot;/sys/kernel/debug/tracing/trace_pipe&quot;, O_RDONLY, 0);
+    if (trace_fd &lt; 0)
+        return;
+
+    while (1) {
+        static char buf[4096];
+        ssize_t sz;
+
+        sz = read(trace_fd, buf, sizeof(buf) - 1);
+        if (sz &gt; 0) {
+            buf[sz] = 0;
+            puts(buf);
+        }
+    }
+}
+
+int main(void) 
+{
+    struct hello_bpf *obj;
+    int err = 0;
+
+    struct rlimit rlim = {
+        .rlim_cur = 512UL &lt;&lt; 20,
+        .rlim_max = 512UL &lt;&lt; 20,
+    };
+
+    err = setrlimit(RLIMIT_MEMLOCK, &amp;rlim);
+    if (err) {
+        fprintf(stderr, &quot;failed to change rlimit\n&quot;);
+        return 1;
+    }
+
+
+    obj = hello_bpf__open();
+    if (!obj) {
+        fprintf(stderr, &quot;failed to open and/or load BPF object\n&quot;);
+        return 1;
+    }
+
+    err = hello_bpf__load(obj);
+    if (err) {
+        fprintf(stderr, &quot;failed to load BPF object %d\n&quot;, err);
+        goto cleanup;
+    }
+
+    err = hello_bpf__attach(obj);
+    if (err) {
+        fprintf(stderr, &quot;failed to attach BPF programs\n&quot;);
+        goto cleanup;
+    }
+
+    read_trace_pipe();
+
+cleanup:
+    hello_bpf__destroy(obj);
+    return err != 0;
+}</code></pre>
+<p><strong>bpf/bpf.h</strong> (libbpf headers for userspace applications): defines various userspace bpf helpers for working with BPF programs and maps</p>
+<p><strong>bpf/libbpf.h</strong> (libbpf headers for userspace applications) : includes libbpf types and functions.</p>
+<p><strong>hello.skel.h</strong> (hello.bpf.o + bpftool): contains a collection of functions and data structures to help load the BPF program and work with its maps, and a generated structure that describes the program that will be loaded.</p>
+<p><strong>read_trace_pipe()</strong> : read from the trace pipe</p>
+<ul>
+<li>define the hello_bpf object and open, load and attach the program (All the generated skeleton code starts with hello_bpf_*). Call <code>read_trace_pipe</code> function. After that we can clean up the program and exit:
+<ul>
+<li>struct hello_bpf *obj</li>
+<li>obj = hello_bpf__open()</li>
+<li>hello_bpf__load(obj)</li>
+<li>hello_bpf__attach(obj)</li>
+<li>hello_bpf__destroy(obj)</li>
+</ul></li>
+</ul>
+<p><strong>struct rlimit rlim</strong>: set appropriate rlimits</p>
+</div>
+<div id="maps" class="section level3" number="1.1.2">
+<h3><span class="header-section-number">1.1.2</span> maps</h3>
+<p>maps.h:</p>
+<pre class="r"><code>#ifndef _MAPS_H
+#define _MAPS_H
+
+#define TASK_COMM_LEN 16
+
+struct event {
+    char comm[TASK_COMM_LEN];
+    pid_t pid;
+    uid_t uid;
+};
+
+#endif</code></pre>
+<p>store the PID, UID and the command line used to invoke the program.</p>
+<p>maps.bpf.c:</p>
+<pre class="r"><code>#include &quot;vmlinux.h&quot;
+#include &lt;bpf/bpf_helpers.h&gt;
+#include &quot;maps.h&quot;
+
+struct {
+    __uint(type, BPF_MAP_TYPE_HASH);
+    __uint(max_entries, 128);
+    __type(key, pid_t);
+    __type(value, struct event);
+} execs SEC(&quot;.maps&quot;);
+
+SEC(&quot;tracepoint/syscalls/sys_enter_execve&quot;)
+int tracepoint__syscalls__sys_enter_execve(struct trace_event_raw_sys_enter *ctx)
+{
+    struct event *event;
+    pid_t pid;
+    u64 id;
+    uid_t uid = (u32) bpf_get_current_uid_gid();
+
+    id = bpf_get_current_pid_tgid();
+    pid = (pid_t)id;
+
+    if (bpf_map_update_elem(&amp;execs, &amp;pid, &amp;((struct event){}), 1)) {
+        return 0;
+    }
+
+    event = bpf_map_lookup_elem(&amp;execs, &amp;pid);
+    if (!event) {
+        return 0;
+    }
+
+    event-&gt;pid = pid;
+    event-&gt;uid = uid;
+    bpf_get_current_comm(&amp;event-&gt;comm, sizeof(event-&gt;comm));
+
+    /*
+    if (bpf_map_update_elem(&amp;execs, &amp;pid, event, 2)) {
+        return 0;
+    }
+    */
+
+    return 0;
+}
+
+char LICENSE[] SEC(&quot;license&quot;) = &quot;GPL&quot;;</code></pre>
+<ul>
+<li><strong>execs SEC(“.maps”)</strong>: map definition. Place them in the “.maps” section so that the userspace loader can load and set up the maps properly.
+<ul>
+<li>A hash map that works like a hash table. Maximum of 128 entries, where the key is the PID, and the value is a struct that will track execve arguments (maps.h).</li>
+</ul></li>
+<li><strong>struct event *event</strong>: create an event structure and fill it with data from the syscall.
+<ul>
+<li>bpf_get_current_uid_gid() (bpf helper functions provided by the kernel) : Retrieve UID</li>
+<li>bpf_get_current_pid_tgid() (bpf helper functions provided by the kernel) : Retrieve PID</li>
+</ul></li>
+</ul>
+<p><strong>if (bpf_map_update_elem())</strong> : This call succeeds if the event for the PID doesn’t exist and sets the value to an empty event.</p>
+<p><strong>event = bpf_map_lookup_elem()</strong> : capture only one exec event per PID (using a hash map), and retrieve the entry associated with our current PID (posiible muitiple event per PID)</p>
+<p><strong>bpf_get_current_comm()</strong> (kernel bpf helper): retrieves the command line and store it.</p>
+<p>maps.c:</p>
+<pre class="r"><code>#include &lt;sys/types.h&gt;
+#include &lt;sys/stat.h&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;sys/resource.h&gt;
+#include &lt;argp.h&gt;
+
+#include &lt;bpf/libbpf.h&gt;
+#include &lt;bpf/bpf.h&gt;
+
+#include &quot;maps.skel.h&quot;
+#include &quot;maps.h&quot;
+
+static struct env {
+    bool verbose;
+} env = {
+    .verbose = false,
+};
+
+const char *argp_program_version = &quot;bpf loggin example&quot;;
+const char argp_program_doc[] = 
+&quot;An example BPF CO-RE application that demonstrates a libbpf maps set up\n&quot;;
+static const struct argp_option opts[] = {
+    {NULL, &#39;h&#39;, NULL, OPTION_HIDDEN, &quot;Show the full help&quot;},
+    {&quot;verbose&quot;, &#39;v&#39;, NULL, 0, &quot;verbose debug output&quot;},
+    {},
+};
+
+int libbpf_print_fn(enum libbpf_print_level level,
+        const char *format, va_list args)
+{
+    if (level == LIBBPF_DEBUG &amp;&amp; !env.verbose) {
+        return 0;
+    }
+
+    return vfprintf(stderr, format, args);
+}
+
+static error_t parse_arg(int key, char *arg, struct argp_state *state)
+{
+    switch (key) {
+    case &#39;v&#39;:
+        env.verbose = true;
+        break;
+    case &#39;h&#39;:
+        argp_usage(state);
+        break;
+    default:
+        return ARGP_ERR_UNKNOWN;
+
+    }
+
+    return 0;
+}
+
+static int print_execs(int fd)
+{
+    int err;
+    struct event ev;
+    pid_t lookup_key = 0, next_key;
+
+    while (!bpf_map_get_next_key(fd, &amp;lookup_key, &amp;next_key)) {
+        err = bpf_map_lookup_elem(fd, &amp;next_key, &amp;ev);
+        if (err &lt; 0) {
+            fprintf(stderr, &quot;failed to lookup exec: %d\n&quot;, err);
+            return -1;
+        }
+        printf(&quot;\nProcess Name = %s, uid = %u, pid = %u\n&quot;, ev.comm, ev.uid, ev.pid);
+        err = bpf_map_delete_elem(fd, &amp;next_key);
+        if (err &lt; 0) {
+            fprintf(stderr, &quot;failed to cleanup execs : %d\n&quot;, err);
+            return -1;
+        }
+        lookup_key = next_key;
+    }
+
+    return 0;
+}
+
+int main(int argc, char **argv) {
+    struct maps_bpf *obj;
+    int err = 0;
+    struct rlimit rlim = {
+        .rlim_cur = 512UL &lt;&lt; 20,
+        .rlim_max = 512UL &lt;&lt; 20,
+    };
+    const struct argp argp = {
+        .options = opts,
+        .parser = parse_arg,
+        .doc = argp_program_doc,
+    };
+    int fd;
+
+    err = setrlimit(RLIMIT_MEMLOCK, &amp;rlim);
+    if (err) {
+        fprintf(stderr, &quot;failed to change rlimit\n&quot;);
+        return 1;
+    }
+
+    err = argp_parse(&amp;argp, argc, argv, 0, NULL, NULL);
+    if (err) {
+        fprintf(stderr, &quot;failed to parse command line arguments\n&quot;);
+        return 1;
+    }
+
+    libbpf_set_print(libbpf_print_fn);
+    
+    obj = maps_bpf__open();
+    if (!obj) {
+        fprintf(stderr, &quot;failed to open and/or load BPF object\n&quot;);
+        return 1;
+    }
+
+    err = maps_bpf__load(obj);
+    if (err) {
+        fprintf(stderr, &quot;failed to load BPF object %d\n&quot;, err);
+        goto cleanup;
+    }
+
+    err = maps_bpf__attach(obj);
+    if (err) {
+        fprintf(stderr, &quot;failed to attach BPF programs\n&quot;);
+        goto cleanup;
+    }
+
+    fd = bpf_map__fd(obj-&gt;maps.execs);
+
+    printf(&quot;printing executed commands\n&quot;);
+
+    while (1) {
+        print_execs(fd);
+        fd = bpf_map__fd(obj-&gt;maps.execs);
+    }
+
+cleanup:
+    maps_bpf__destroy(obj);
+    return err != 0;
+}</code></pre>
+<p><strong>libbpf_print_fn()</strong>: user-defined callback used by libbpf to print useful information</p>
+<p><strong>print_execs()</strong>: iterate through the map and print the data</p>
+<p><strong>libbpf_set_print(libbpf_print_fn)</strong>: set up verbose libbpf logging to ease debugging</p>
+<p>**bpf_map__fd()** : retrieve the file descriptor associated with the map. The obj-&gt;maps structure (skeleton) contains all the maps associated with the opened BPF program.</p>
+</div>
+</div>
+</div>
+<div id="準備主要編譯環境將-debian10-升級至-debian11" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> 準備主要編譯環境：將 Debian10 升級至 Debian11</h1>
 <p>可以在剛完成 debian10 安裝且網路可以穩定運作的情況下直接進行</p>
-<div id="更新-repository-清單" class="section level2" number="1.1">
-<h2><span class="header-section-number">1.1</span> 更新 repository 清單</h2>
-<p>如果 debian10 還沒有進行鏡像站設定，首先要修改 /etc/apt/source.list ，註解 cdrom，加入鏡像站位置 (例如台灣 <a href="http://ftp.tw.debian.org/debian)共四行，並且加入" class="uri">http://ftp.tw.debian.org/debian)共四行，並且加入</a> non-free，完成後檔案內容像這樣:</p>
+<p>debian11 內核預設設定有 <code>CONFIG_DEBUG_INFO=y</code> 和 <code>CONFIG_DEBUG_INFO_BTF=y</code> (產生 <code>/sys/kernel/btf/vmlinux</code>，用來產生 <code>vmlinux.h</code>)</p>
+<div id="更新-repository-清單" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> 更新 repository 清單</h2>
+<p>如果 debian10 還沒有進行鏡像站設定，首先要修改 <code>/etc/apt/source.list</code> ，註解 <code>cdrom ...</code> 這行，加入鏡像站位置 (例如台灣 <code>http://ftp.tw.debian.org/debian</code>)共四行，並且加入 <code>non-free</code>，完成後檔案內容像這樣:</p>
 <pre class="r"><code>deb http://ftp.tw.debian.org/debian/ buster main contrib non-free
 deb-src http://ftp.tw.debian.org/debian/ buster main contrib non-free
 
@@ -206,7 +628,7 @@ deb-src http://ftp.tw.debian.org/debian/ buster-updates main contrib non-free</c
 <p>接著執行以下指令，將 debian10 的清單換成 debian11 的</p>
 <pre class="r"><code>sudo sed -i &#39;s/buster/bullseye/g&#39; /etc/apt/sources.list
 sudo sed -i &#39;s/buster/bullseye/g&#39; /etc/apt/sources.list.d/*</code></pre>
-<p>此時檔案會像這樣:</p>
+<p>確認清單把 <code>buster</code> 換成 <code>bullseye</code>:</p>
 <pre class="r"><code>deb http://ftp.tw.debian.org/debian/ bullseye main contrib non-free
 deb-src http://ftp.tw.debian.org/debian/ bullseye main contrib non-free
 
@@ -216,7 +638,7 @@ deb-src http://security.debian.org/debian-security bullseye/updates main
 # bullseye-updates, previously known as &#39;volatile&#39;
 deb http://ftp.tw.debian.org/debian/ bullseye-updates main contrib non-free
 deb-src http://ftp.tw.debian.org/debian/ bullseye-updates main contrib non-free</code></pre>
-<p>最後要修改 debian security，然後儲存檔案:</p>
+<p>最後要修改 <code>debian security</code>，然後儲存檔案:</p>
 <pre class="r"><code>deb http://ftp.tw.debian.org/debian/ bullseye main contrib non-free
 deb-src http://ftp.tw.debian.org/debian/ bullseye main contrib non-free
 
@@ -227,60 +649,75 @@ deb-src https://deb.debian.org/debian-security bullseye-security main contrib
 deb http://ftp.tw.debian.org/debian/ bullseye-updates main contrib non-free
 deb-src http://ftp.tw.debian.org/debian/ bullseye-updates main contrib non-free</code></pre>
 </div>
-<div id="進行系統更新" class="section level2" number="1.2">
-<h2><span class="header-section-number">1.2</span> 進行系統更新</h2>
+<div id="進行系統更新" class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> 進行系統更新</h2>
 <p>更新 repository lists</p>
 <pre class="r"><code>sudo apt update</code></pre>
 <p>先進行最小化更新，如果畫面顯示套件重新啟動的相關訊息就按 q 見跳過；如果出現在套件升級時未經詢問重啟服務的訊息你可以選擇左邊的「Yes」簡化安裝，這個過程大約花費半小時</p>
 <pre class="r"><code>sudo apt upgrade --without-new-pkgs</code></pre>
 <p>接著進行完整升級，和上面類似，這次會花費大約一個半小時</p>
 <pre class="r"><code>sudo apt full-upgrade</code></pre>
-<p>完成之後重開機，清除舊套件和暫存檔案來釋放大量空間</p>
+<p>完成之後重開機，你可以清除舊套件和暫存檔案來釋放大量空間</p>
 <pre class="r"><code>sudo apt --purge autoremove
 sudo apt autoclean</code></pre>
 </div>
 </div>
-<div id="編譯-bpf-co-re-範例程式碼及驗證" class="section level1" number="2">
-<h1><span class="header-section-number">2</span> 編譯 bpf CO-RE 範例程式碼及驗證</h1>
-<div id="下載編譯工具" class="section level2" number="2.1">
-<h2><span class="header-section-number">2.1</span> 下載編譯工具</h2>
+<div id="編譯-bpf-co-re-範例程式碼及驗證" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> 編譯 bpf CO-RE 範例程式碼及驗證</h1>
+<div id="下載編譯工具" class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> 下載編譯工具</h2>
 <p>執行以下指令安裝必要套件和工具</p>
 <pre class="r"><code>apt-get updete
 apt-get install clang build-essential bpftool git</code></pre>
 </div>
-<div id="編譯範例程式碼" class="section level2" number="2.2">
-<h2><span class="header-section-number">2.2</span> 編譯範例程式碼</h2>
-<p>首先把範例程式碼抓下來</p>
+<div id="編譯範例程式碼" class="section level2" number="3.2">
+<h2><span class="header-section-number">3.2</span> 編譯範例程式碼</h2>
+<p>首先取得範例程式碼</p>
 <pre class="r"><code>git clone https://github.com/sartura/ebpf-core-sample
 cd ebpf-core-sample</code></pre>
-<p>針對 <code>hello.bpf.c</code> 要做一點修改，不然沒辦法移植到 debian10 上</p>
+<p>針對 <code>hello.bpf.c</code> 做修改</p>
 <pre class="r"><code>#include &quot;vmlinux.h&quot;
 #define BPF_NO_GLOBAL_DATA 1
 #include &lt;bpf/bpf_helpers.h&gt;</code></pre>
 <p>修改完成後依序執行以下指令，忽視警告訊息，你會得到二個可以執行的檔案 <code>hello</code> 和 <code>maps</code></p>
-<pre class="r"><code>bpftool btf dump file /sys/kernel/btf/vmlinux format c &gt; vmlinux.h
+<pre class="r"><code># 產生 vmlinux.h 標頭檔
+bpftool btf dump file /sys/kernel/btf/vmlinux format c &gt; vmlinux.h
+# 編譯 hello.bpf.c 產生 hello.bpf.o 物件檔
+# gcc 目前不支援 .bpc.c 的編譯，未來說不定可以
 clang -g -O2 -target bpf -D__TARGET_ARCH_x86_64 -I . -c hello.bpf.c -o hello.bpf.o
+# 由 hello.bpf.o 產生 hello.skel.h 標頭檔
 bpftool gen skeleton hello.bpf.o &gt; hello.skel.h
+# 編譯 hello.c 產生 hello.o 物件檔
 clang -g -O2 -Wall -I . -c hello.c -o hello.o
+# 獲得 libbpf 原始碼
 git clone https://github.com/libbpf/libbpf &amp;&amp; cd libbpf/src/
+# 編譯出靜態函式庫
 make BUILD_STATIC_ONLY=1 OBJDIR=../build/libbpf DESTDIR=../build INCLUDEDIR= LIBDIR= UAPIDIR= install
+# 將 hello.o 與 libbpf 靜態函式庫連接，產生 hello 執行檔
 clang -Wall -O2 -g hello.o libbpf/build/libbpf.a -lelf -lz -o hello
+# 以相同作法產生 maps 執行檔
 clang -g -O2 -target bpf -D__TARGET_ARCH_x86_64 -I . -c maps.bpf.c -o maps.bpf.o
 bpftool gen skeleton maps.bpf.o &gt; maps.skel.h
 clang -g -O2 -Wall -I . -c maps.c -o maps.o
 clang -Wall -O2 -g maps.o libbpf/build/libbpf.a -lelf -lz -o maps</code></pre>
 </div>
-<div id="驗證移植性" class="section level2" number="2.3">
-<h2><span class="header-section-number">2.3</span> 驗證移植性</h2>
-<p>試著在 debian11 上執行 <code>hello</code> 和 <code>maps</code>，它們可以印出接下來的指令或是動作。將整個資料夾移動至 debian10 內，直接執行執行檔，會有相同的結果，也就符合 CO-RE 的精神</p>
+<div id="驗證移植性" class="section level2" number="3.3">
+<h2><span class="header-section-number">3.3</span> 驗證移植性</h2>
+<p>試著在 debian11 上執行 <code>sudo ./hello</code> 和 <code>sudo ./maps</code>，它們可以印出接下來的指令或是動作。確認可以正常執行後，將整個資料夾移動至 debian10 內，直接執行執行檔，會有相同的結果，也就符合 CO-RE 的精神</p>
 </div>
 </div>
-<div id="參考資料" class="section level1" number="3">
-<h1><span class="header-section-number">3</span> 參考資料</h1>
+<div id="參考資料" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> 參考資料</h1>
 <ul>
 <li><a href="https://ostechnix.com/upgrade-to-debian-11-bullseye-from-debian-10-buster/">How To Upgrade To Debian 11 Bullseye From Debian 10 Buster</a></li>
 <li><a href="https://www.sartura.hr/blog/simple-ebpf-core-application/">Simple eBPF CO-RE Application</a></li>
 </ul>
+</div>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p><a href="https://www.man7.org/linux/man-pages/man7/bpf-helpers.7.html">bpf-helpers manpage</a><a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+</ol>
 </div>
 
 
