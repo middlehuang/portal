@@ -177,7 +177,8 @@ pre code {
 <ul>
 <li><a href="#什麼是-bpf"><span class="toc-section-number">1.1</span> 什麼是 BPF ?</a></li>
 <li><a href="#什麼是-bpf-co-re-compile-once-run-everywhere"><span class="toc-section-number">1.2</span> 什麼是 BPF CO-RE (Compile-Once Run-Everywhere)?</a></li>
-<li><a href="#範例程式碼解說"><span class="toc-section-number">1.3</span> 範例程式碼解說</a></li>
+<li><a href="#bpf-co-re-編譯環境軟體需求"><span class="toc-section-number">1.3</span> BPF CO-RE 編譯環境軟體需求</a></li>
+<li><a href="#bpf-co-re-說明"><span class="toc-section-number">1.4</span> BPF CO-RE 說明</a></li>
 </ul></li>
 <li><a href="#準備主要編譯環境將-debian10-升級至-debian11"><span class="toc-section-number">2</span> 準備主要編譯環境：將 Debian10 升級至 Debian11</a>
 <ul>
@@ -196,14 +197,13 @@ pre code {
 
 <div id="bpf-co-re-概念" class="section level1" number="1">
 <h1><span class="header-section-number">1</span> BPF CO-RE 概念</h1>
-<p>本章節先介紹 BPF CO-RE 的前身 – BPF 的用途、架構、以及問題，CO-RE 如何解決問題，BPF CO-RE 各部分的內容大綱</p>
 <div id="什麼是-bpf" class="section level2" number="1.1">
 <h2><span class="header-section-number">1.1</span> 什麼是 BPF ?</h2>
 <p>Berkeley Packet Filter (BPF)，是一種非常有彈性、效率佳、在 Linux kernel 執行的虛擬機器，它讓 bytecode 在各種 Linux kernel 子系統內的 hook 裡，經過加載和認證後可以安全地被執行，這些程式在 kernel 記憶體空間內執行並可以取得對應的 internel kernel state。BPF 主要用於網路、追蹤和資安。</p>
 <p>一般 BPF 程式是在目標環境編譯，理由是：</p>
 <ul>
 <li>獲得 kernel struct 物件資訊，因為 kernel struct 和其 field 會隨著版本移動、重新命名、改變類型或刪除</li>
-<li>記憶體配置也會隨著 kernel 版本/設定而有所<strong>改變</strong></li>
+<li>記憶體配置會隨著 kernel 版本/設定而有所<strong>改變</strong></li>
 <li>BPF 程式以<strong>固定</strong>的誤差/大小進行編譯</li>
 </ul>
 <p>因為上述理由，BPF 開發者使用 BCC (BPF Compiler Collection) 進行開發。BCC 會把 BPF 程式的 C 程式碼以<strong>純字串</strong>形式貼在使用者空間程式 (控制型應用程式) 上，當控制型應用程式最後在目標端被部署和執行時，BCC 使用隨附的 Clang/LLVM 將當地 kernel headers (你必須確保目標系統透過正確的 kernel-devel 套件來安裝) 拉入，然後在當地進行編譯，這樣可以保證 BPF 程式期望的記憶體配置和目標端使用的 kernel 相同。如果你要處理一些客製 kernel 的不同架構，像是重新命名的 field、不同的價值定義、或是任何現今沒有的選擇性設定，可以用 <code>#ifdef/#else</code> 處理。隨附的 clang 會移除你程式碼不相關的部分並協助把 BPF 程式碼嵌入目標 kernel</p>
@@ -223,7 +223,7 @@ pre code {
 </ul></li>
 <li>測試和開發迭代很麻煩
 <ul>
-<li>各種不同 kernel 版本/設定</li>
+<li>各種不同 kernel 版本/設定要測試</li>
 <li>在測試環境下成功不見得代表在目標環境下也能成功</li>
 <li>BPF 程式在此開發工具下是在執行 binary 的時候才進行編譯，在你重新建立和徹底重新啟動你的使用者空間應用程式之後，就連簡單的編譯錯誤訊息也只能在執行狀態下才能偵測到，這會大幅增加迭代難度</li>
 </ul></li>
@@ -231,9 +231,10 @@ pre code {
 </div>
 <div id="什麼是-bpf-co-re-compile-once-run-everywhere" class="section level2" number="1.2">
 <h2><span class="header-section-number">1.2</span> 什麼是 BPF CO-RE (Compile-Once Run-Everywhere)?</h2>
-<p>能不能編譯一次，然後在所有環境執行 binary? BPF CO-RE 的核心概念認為 BPF 程式和普通使用者空間程式沒什麼不同：它們要被編譯一次成一個小 binary 檔案，在未經修改的緊緻型下部署至目標環境，要達成的目標是:</p>
+<p>為了應付 BCC 的問題，BPF 開發者有個想法:能不能編譯一次，然後在所有環境執行 binary? 於是 BPF CO-RE 在後續關鍵技術誕生之後就問世了</p>
+<p>BPF CO-RE 的核心概念認為 BPF 程式和普通使用者空間程式沒什麼不同：它們要被編譯一次成一個小 binary 檔案，在未經修改的緊緻型下部署至目標環境，要達成的目標是:</p>
 <ul>
-<li>不需要 kernel-headers</li>
+<li>目標環境不需要 kernel-headers</li>
 <li>不需要在目標環境編譯</li>
 <li>在目標 kernel 完成程式驗證</li>
 </ul>
@@ -264,14 +265,13 @@ pre code {
 user-space BPF loader library (libbpf): 由 kernel 開發者提供，用來開發 BPF 程式，也作為 BPF 程式的載入工具
 <ul>
 <li>使用已編譯好的 BPF ELF (Executable and Link File) 檔，藉由 BPF 程式記錄的 BTF type 和重新定位訊息對應至執行 kernel 上提供的 BTF 訊息，配對所有 types 和 fields，必要時更新 offsets 和其它可重新放置的資料以確保 BPF 程式邏輯可以在目標 kernel 正確運作，設置各種 kernel 物件 (maps，程式等等)，觸發 BPF 程式的載入和驗證。開發者只需要注意 BPF 程式的正確性和性能，<strong>不需要在應用程式內附加 clang，也不需要在目標環境執行時進行編譯</strong></li>
-<li>提供 Kconfig 外部變數，libbpf 會讓 BPF 程式可以兼容多種 kernel 特定版本和組態的變化，如同使用全域變數般使用這些外部變數，這些變數會有正確的值且對應至 BPF 程式執行的 kernel，另外 BPF 驗證程式會把這些變數當作已知常數進行追蹤，並且作為進階程式流控制分析和多餘程式移除使用</li>
+<li>提供 Kconfig 外部變數，libbpf 會讓 BPF 程式可以兼容多種 kernel 特定版本和組態的變化，如同使用全域變數般使用這些外部變數，如 <code>LINUX_KERNEL_VERSION</code> 和來自 Kconfig 的 <code>CONFIG_xxx</code> 等等，這些變數會有正確的值且對應至 BPF 程式執行的 kernel，另外 BPF 驗證程式會把這些變數當作已知常數進行追蹤，並且作為進階程式流控制分析和多餘程式移除使用</li>
 <li>提供 struct flavors，不同 kernel 之間出現不相容的 types 時，就無法以單一共同 struct 定義編譯單一 BPF 程式同時適用於不同 kernel，在進行必要的重新定位時，struct flavors 讓多型 type 定義可以對應到目標 kernel 的同一個 struct 上，這讓在單一 C 程式內同一個 kernel type 可以有多個替代(且彼此不相容)的定義，在執行階段可以選出最適當的定義並使用 <strong>type cast 至 struct flavor</strong> 來獲得必要的 fields。要是缺少這功能，就無法僅編譯一次就在不同 kernel 上執行，你需要靠 <code>#ifdef</code> 處理原程式碼，編譯成二個分開的 BPF 程式變化型，在執行階段由控制型應用程式手動選出適當的類型，這樣會增加非必要的複雜度和負擔</li>
 </ul></li>
 <li>bpftool: 針對 BPF 開發流程的實用工具
 <ul>
-<li>編譯環境產生 <strong>vmlinux.h</strong> ，這是包含所有 kernel types 的標頭擋</li>
+<li>在編譯環境產生 <strong>vmlinux.h</strong> ，這是包含所有 kernel types 的標頭擋</li>
 <li>將 BPF binary 轉成 skeleton 標頭擋讓使用者空間程式使用</li>
-<li>使不同環境的測試更方便</li>
 <li><code>bpftool prog -p</code> 可以查看正在執行的 BPF 程式細節</li>
 <li><code>bpftool link</code> 可以查看連接到 BPF 的 link</li>
 <li><code>bpftool feature</code> 可以查看支援不同 BPF 程式類型的 BPF 輔助函數</li>
@@ -279,8 +279,72 @@ user-space BPF loader library (libbpf): 由 kernel 開發者提供，用來開�
 </ul>
 <p>產物的是一個包含預先編譯好 BPF bytecode 的輕巧 ELF binary，它可以在任何地方執行 (不需要 clang/LLVM)，大幅降低儲存所需空間和執行時間，進而讓 BPF 支援更多硬體環境，優化軟體工程師的開發體驗，來自 BCC 的 libbpf-tools 現在有許多的程式支援 CO-RE</p>
 </div>
-<div id="bpf-co-re-編譯和架構說明" class="section level3" number="1.2.2">
-<h3><span class="header-section-number">1.2.2</span> BPF CO-RE 編譯和架構說明</h3>
+</div>
+<div id="bpf-co-re-編譯環境軟體需求" class="section level2" number="1.3">
+<h2><span class="header-section-number">1.3</span> BPF CO-RE 編譯環境軟體需求</h2>
+<ul>
+<li>對於大多數 BPF feature 而言，clang 10 或以上就夠了，但一些更進階的 BPF CO-RE feature 可能需要 clang 11 甚至 12 (例如一些近期先進的 BPF CO-RE relocation build-in)</li>
+<li>安裝 libbpf
+<ul>
+<li>zlib (libz-dev 或 zlib-devel 套件)</li>
+<li>libelf (libelf-dev 或 elfutils-libelf-devel 套件)</li>
+</ul></li>
+<li>安裝 bpftool</li>
+</ul>
+</div>
+<div id="bpf-co-re-說明" class="section level2" number="1.4">
+<h2><span class="header-section-number">1.4</span> BPF CO-RE 說明</h2>
+<div id="bpf-co-re-範例程式碼" class="section level3" number="1.4.1">
+<h3><span class="header-section-number">1.4.1</span> BPF CO-RE 範例程式碼</h3>
+<p>要學習 BPF CO-RE 架構，你可以參考<a href="https://github.com/sartura/ebpf-core-sample">sartura 的範例</a>、<a href="https://github.com/libbpf/libbpf-bootstrap">libbpf-bootstrap 範例</a>、或是<a href="https://github.com/iovisor/bcc/tree/master/libbpf-tools">BCC 的 libbpf-tools 範例</a></p>
+</div>
+<div id="bpf-maps-說明" class="section level3" number="1.4.2">
+<h3><span class="header-section-number">1.4.2</span> BPF maps 說明</h3>
+<p>BPF maps 是抽象資料容器，使用 key/valu 結構形式，用於在使用者空間程式和 kernel 程式之間交換資料，在 BPF 程式定義 maps 資料結構 (少數不會遵照此格式，如 PERF_EVENT_ARRAY, STACK_TRACE, DEVMAP, CPUMAP 等等):</p>
+<pre class="r"><code>struct {
+    __uint(type, BPF_MAP_TYPE_&lt;類型&gt;); /* 填入 ARRAY, HASH, PERCPU_ARRAY, ...*/
+    __uint(max_entries, &lt;最大元素數目&gt;);
+    __type(key, &lt;索引變數形式&gt;);
+    __type(value, &lt;價值形式&gt;); /* 如果是物件，其定義位於標頭檔，手動定義或來自 vmlinux.h 皆可 */
+} &lt;map 名稱&gt; SEC(&quot;.maps&quot;);</code></pre>
+</div>
+<div id="bpf-co-re-程式碼檔案和架構" class="section level3" number="1.4.3">
+<h3><span class="header-section-number">1.4.3</span> BPF CO-RE 程式碼檔案和架構</h3>
+<p>BPF 程式碼檔案有三種，以下介紹它們以及其內部需要引用的函式庫和變數</p>
+<ul>
+<li><code>&lt;app&gt;.bpf.c</code>: 含有在 kernel 執行內容的 BPF C 程式碼，你可以在此定義許多 BPF 程式，相同或不同種類皆可，它們會共享全域狀態，常利用來讓彼此互動
+<ul>
+<li>引入 <code>vmlinux.h</code>: 含有所有 kernel types</li>
+<li><code>bpf_helpers.h</code>: 由 <code>libbpf</code> 提供，含有最常用的巨集、常數、以及幾乎每個 BPF 應用程式都會使用的 BPF helper 定義
+<ul>
+<li><code>SEC()</code> 巨集仿照 C 函數將變數及函數放在指定區域，例如 <code>SEC(&quot;tp/syscalls/sys_enter_write&quot;) int handle_tp(void *ctx) { ... }</code> 定義每次從任何使用者空間應用程式觸發 <code>write()</code> syscall 的時候，就會被呼叫的 tracepoint BPF 程式</li>
+<li><code>bpf_map_&lt;operation&gt;_elem(&amp;some_map, &amp;keyvar[, &amp;valuevar][, args])</code> 是在 kernel 對 map 進行操作的函數，常見的 operation 有 lookup, update, delete, push, pop,peek 等</li>
+</ul></li>
+<li>LICENSE 變數定義你 BPF 程式碼的許可，kernel 要求一定要宣告</li>
+<li>可以在這裡定義全域變數，它可以被 BPF 程式碼讀取和更新</li>
+</ul></li>
+<li><code>&lt;app&gt;.c</code>: 載入 BPF 程式碼並在應用程式生命週期和其互動的使用者空間 C 程式碼，用宣告 <code>const volatile</code> 宣告全域變數代表唯讀
+<ul>
+<li>從 kernel 5.5 版開始，使用者空間程式也能讀取和改寫全域變數</li>
+<li>引入 <code>&lt;app&gt;.skel.h</code>，對應 BPF C 的高階結構，藉由將編譯好的 BPF 物件程式碼內容貼在標頭檔內來簡化 BPF 程式碼的部署，也可以利用它來直接取用全域變數</li>
+<li><code>libbpf_set_print()</code> 可以客製化 libbpf 日誌輸出，對於程式除錯非常有用</li>
+<li>提升 <code>RLIMIT_MEMLOCK</code> 極限，最簡單的方法是 <code>setrlimit(RLIMIT_MEMLOCK, ...)</code>，提升 kernel 使用者內部記憶體上限，讓 BPF 子系統可以分配必要資源給 BPF 程式、maps 等等，</li>
+</ul></li>
+<li><code>&lt;app&gt;.h</code> (選擇性): 含有應用程式 BPF 程式碼和使用者空間程式碼共同 type 定義的標頭檔</li>
+</ul>
+</div>
+<div id="bpf-co-re-應用程式生命週期" class="section level3" number="1.4.4">
+<h3><span class="header-section-number">1.4.4</span> BPF CO-RE 應用程式生命週期</h3>
+<p>BPF 應用程式通常會經歷以下階段 (BPF skeleton 有對應的函數在使用者空間程式觸發各個階段):</p>
+<ul>
+<li>開啟階段 &lt;-&gt; &lt;name&gt;__open(): 貼上 BPF 物件檔，發現 BPF 程式、BPF maps、和全域變數但還沒有創建，可以在 BPF 應用程式開啟後，在本體被建造和載入之前做調整 (必要時設定 BPF 程式類型，預設全域變數初始值等等)</li>
+<li>載入階段 &lt;-&gt; &lt;name&gt;__load(): 建立 BPF maps，已處理各種重新定位，將 BPF 程式載入 kernel 和驗證，此時所有 BPF 應用程式的部分都已經驗證並存在於 kernel 中，但還沒有 BPF 程式被執行，在此階段後，可以初始化 BPF maps。如果你不打算在載入之前調整 BPF 程式，你可以用 <code>&lt;name&gt;__open_and_load()</code> 來合併開啟階段和載入階段</li>
+<li>附加階段 &lt;-&gt; &lt;name&gt;__attach(): 將 BPF 程式附加於各種 BPF hook points (如 tracepoints, kprobes, cgroup hooks, network packet processing pipeline 等等)上，這是 BPF 開始執行實用作業和讀取/更新 BPF maps 及 全域變數的階段</li>
+<li>拆除階段 &lt;-&gt; &lt;name&gt;__destroy(): 將 BPF 程式從 kernel 卸載，摧毀 BPF maps 並釋放 BPF 應用程式使用的所有資源</li>
+</ul>
+</div>
+<div id="bpf-co-re-編譯步驟" class="section level3" number="1.4.5">
+<h3><span class="header-section-number">1.4.5</span> BPF CO-RE 編譯步驟</h3>
 <p>建造 BPF CO-RE 程式需要以下步驟:</p>
 <ul>
 <li>製造含有所有 kernel types 的 <code>vmlinux.h</code> 標頭檔</li>
@@ -289,444 +353,6 @@ user-space BPF loader library (libbpf): 由 kernel 開發者提供，用來開�
 <li>在使用者空間程式碼引用製造的 BPF skeleton 標頭檔來使用</li>
 <li>最後編譯使用者空間程式碼，這樣 BPF 物件程式碼就會附加在裏面，這樣你的應用程式就不用隨附其他檔案</li>
 </ul>
-<p>BPF 會使用記憶體來處理 BPF maps 和 其他各種東西，你可以在使用者空間程式開頭使用 setrlimit(2) 系統呼叫來設定:</p>
-<pre class="r"><code>#include &lt;sys/resource.h&gt;
-
-    rlimit rlim = {
-        .rlim_cur = 512UL &lt;&lt; 20, /* 512 MBs */
-        .rlim_max = 512UL &lt;&lt; 20, /* 512 MBs */
-    };
-
-    err = setrlimit(RLIMIT_MEMLOCK, &amp;rlim);
-    if (err)
-        /* handle error */</code></pre>
-<p>當某部分不如期望運行的時候，開始調查的最好方法就是查看 libbpf 日誌輸出，在使用者空間程式設定</p>
-<pre class="r"><code>int print_libbpf_log(enum libbpf_print_level lvl, const char *fmt, va_list args)
-{
-    if (!FLAGS_bpf_libbpf_debug &amp;&amp; lvl &gt;= LIBBPF_DEBUG)
-        return 0;
-    return vfprintf(stderr, fmt, args);
-}
-
-/* ... */
-
-libbpf_set_print(print_libbpf_log); /* set custom log handler */</code></pre>
-<p>每個 BPF 應用程式由一些相依或獨立的 BPF 程式、BPF maps、和所有 BPF 程式共享的全域變數(讓它們在共同的資料集合作)組成，BPF maps 和全域變數也可以在使用者空間取得，讓控制程式可以取得或設置必要的額外資料，BPF 應用程式通常會經歷以下階段 (製造的 BPF skeleton 有對應的函數來觸發各個階段):</p>
-<ul>
-<li>開啟階段 &lt;-&gt; &lt;name&gt;__open(): 貼上 BPF 物件檔，發現 BPF 程式、BPF maps、和全域變數但還沒有創建，可以在 BPF 應用程式開啟後，在本體被建造和載入之前做調整 (必要時設定 BPF 程式類型，預設全域變數初始值等等)</li>
-<li>載入階段 &lt;-&gt; &lt;name&gt;__load(): 建立 BPF maps，已處理各種重新定位，將 BPF 程式載入 kernel 和驗證，此時所有 BPF 應用程式的部分都已經驗證並存在於 kernel 中，但還沒有 BPF 程式被執行，在此階段後，可以初始化 BPF maps</li>
-<li>附加階段 &lt;-&gt; &lt;name&gt;__attach(): 將 BPF 程式附加於各種 BPF hook points (如 tracepoints, kprobes, cgroup hooks, network packet processing pipeline 等等)上，這是 BPF 開始執行實用作業和讀取/更新 BPF maps 及 全域變數的階段</li>
-<li>拆除階段 &lt;-&gt; &lt;name&gt;__destroy(): 將 BPF 程式從 kernel 卸載，摧毀 BPF maps 並釋放 BPF 應用程式使用的所有資源</li>
-</ul>
-<p>在 BPF 程式定義 maps 資料結構 (少數不會遵照此格式，如 PERF_EVENT_ARRAY, STACK_TRACE, DEVMAP, CPUMAP 等等):</p>
-<pre class="r"><code>struct {
-    __uint(type, BPF_MAP_TYPE_&lt;類型&gt;); /* 填入 ARRAY, HASH, PERCPU_ARRAY*/
-    __uint(max_entries, &lt;最大元素數目&gt;);
-    __type(key, &lt;索引值&gt;);
-    __type(value, struct &lt;物件名稱&gt;); /* 在標頭檔定義 */
-} &lt;mapname&gt; SEC(&quot;.maps&quot;);</code></pre>
-<p>在 kernel 對 map 進行操作的函數形式為 <code>bpf_map_&lt;operation&gt;_elem(&amp;some_map, some, args)</code>，於 bpf_helpers.h 定義，常見的 operation 有
-* lookup
-* update
-* delete
-* push
-* pop
-* peek</p>
-<p>所有 BPF 程式提供的功能都需要透過 <code>SEC()</code> 來定義 section 名稱和 BPF 程式類型</p>
-<pre class="r"><code>/* tracepoint 程式類型範例 */
-SEC(&quot;tracepoint/sched/sched_process_exec&quot;)
-int tracepoint__sched__sched_process_exec(struct trace_event_raw_sched_process_exec *args) {
-/* ... */
-}
-
-/* kprobe 程式類型範例 */
-/* 對應的 BPF_KRETPROBE 巨集對應其回傳 probe */
-SEC(&quot;kprobe/acct_collect&quot;)
-int BPF_KPROBE(kprobe__acct_collect, long exit_code, int group_dead)
-{
-    /* BPF code accessing exit_code and group_dead here */
-}</code></pre>
-<p>先完成 BPF 程式再完成 userspace 程式，觸發相關的 kernel 事件後由 BPF 回傳資料至 userspace 程式位置做處理和互動</p>
-<p>userspace 只能透過 BPF skeleton 在 load BPF 程式之前讀取或更新 BPF 側的全域變數</p>
-<p>bpf_helpers.h: 這是 BPF 程式內最常用的標頭檔，含有巨集 SEC 的定義，以及用來標記自定義的輔助函數 __always_inline 等等 <a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>
-bpf_core_read.h: 定義了讀取 kernel struct 的方法</p>
-<p>bpf.h: 含有 BTF 結構種類和函數，也定義通用的 ebpf ELF 操作
-libbpf.h: 含有非 BTF 相關的物件和其對應函數，例如通用的 ebpf ELF 對象的加載操作</p>
-<ul>
-<li><strong>BPF maps</strong> : generic data structures for storing different types of data (hash maps, arrays, event-based structures). They can be shared and accessed by multiple BPF programs. Maps are handled through file descriptors in userspace programs.
-<ul>
-<li>Many maps are key-value based</li>
-<li>some are event-based, meaning that the userspace polls the maps and receives an event when new data is added to the map.</li>
-</ul></li>
-</ul>
-<p>each BPF program can consist of only one function where calls to other functions are not allowed, at least not in the usual way. every BPF program must return an integer, which then decides what action to take based on the returned value (e.g., drop or forward a network packet).</p>
-<ul>
-<li>BPF CO-RE:
-<ul>
-<li>libbpf
-<ul>
-<li>bpf_helpers.h: BPF kernel helper functions
-<ul>
-<li>manipulate maps</li>
-<li>deal with accesses through userspace pointers</li>
-<li>retrieve information about the current process</li>
-</ul></li>
-</ul></li>
-</ul></li>
-<li>BPF app lifecycle
-<ul>
-<li>Open phase &lt;-&gt; obj = <name>__open(): opens and parses the BPF program, maps and global variables. Possible to make any additional adjustments before all the entities are created and loaded:
-<ul>
-<li>setting BPF program types</li>
-<li>pre-setting initial values for global variables</li>
-<li>…</li>
-</ul></li>
-<li>Load phase &lt;-&gt; <name>__load(obj): loads the program into the kernel, where it is verified. At this point, maps are initialized with starting values. can be selective</li>
-<li>Attachment phase &lt;-&gt; <name>__attach(obj): attach the BPF program to our target hook point, a system call entry tracepoint. After attaching, the program will start running. can be selective with bpf_program__attach(). Possible BPF hook point:
-<ul>
-<li>tracepoints</li>
-<li>kprobes</li>
-<li>cgroup hooks</li>
-<li>network packet processing pipeline</li>
-<li>…</li>
-</ul></li>
-<li>Tear down phase &lt;-&gt; <name>__destroy(obj): clean up the program and exit</li>
-</ul></li>
-</ul>
-</div>
-</div>
-<div id="範例程式碼解說" class="section level2" number="1.3">
-<h2><span class="header-section-number">1.3</span> 範例程式碼解說</h2>
-<p><a href="https://github.com/sartura/ebpf-core-sample">來源程式碼</a></p>
-<div id="hello" class="section level3" number="1.3.1">
-<h3><span class="header-section-number">1.3.1</span> hello</h3>
-<pre class="r"><code>#include &quot;vmlinux.h&quot;
-#define BPF_NO_GLOBAL_DATA 1
-#include &lt;bpf/bpf_helpers.h&gt;
-
-SEC(&quot;tracepoint/syscalls/sys_enter_execve&quot;)
-int tracepoint__syscalls__sys_enter_execve(struct trace_event_raw_sys_enter *ctx)
-
-{
-    bpf_printk(&quot;Hello world!\n&quot;)
-    return 0;
-}
-
-char LICENSE[] SEC(&quot;license&quot;) = &quot;GPL&quot;;</code></pre>
-<ul>
-<li><strong>SEC()</strong> (bpf_helpers) : places the function below into a special ELF section to let libbpf know where to attach the BPF program (<code>execve syscall</code>, trigger the BPF program on system call entry).
-<ul>
-<li>tracepoint/syscalls/sys_enter_execve &lt;-&gt; <code>/sys/kernel/debug/tracing</code>/events/syscalls/sys_enter_execve.</li>
-</ul></li>
-</ul>
-<p><strong>struct trace_event_raw_sys_enter *ctx</strong> (vmlinux.h) : generic argument received by functions that attach to system call entry points.</p>
-<p>writing the userspace loader</p>
-<p>hello.c :</p>
-<pre class="r"><code>#include &lt;sys/types.h&gt;
-#include &lt;sys/stat.h&gt;
-#include &lt;fcntl.h&gt;
-#include &lt;unistd.h&gt;
-#include &lt;sys/resource.h&gt;
-
-#include &lt;bpf/libbpf.h&gt;
-#include &lt;bpf/bpf.h&gt;
-#include &quot;hello.skel.h&quot;
-
-void read_trace_pipe(void)
-{
-    int trace_fd;
-
-    trace_fd = open(&quot;/sys/kernel/debug/tracing/trace_pipe&quot;, O_RDONLY, 0);
-    if (trace_fd &lt; 0)
-        return;
-
-    while (1) {
-        static char buf[4096];
-        ssize_t sz;
-
-        sz = read(trace_fd, buf, sizeof(buf) - 1);
-        if (sz &gt; 0) {
-            buf[sz] = 0;
-            puts(buf);
-        }
-    }
-}
-
-int main(void) 
-{
-    struct hello_bpf *obj;
-    int err = 0;
-
-    struct rlimit rlim = {
-        .rlim_cur = 512UL &lt;&lt; 20, /* 512 MBs */
-        .rlim_max = 512UL &lt;&lt; 20,
-    };
-
-    err = setrlimit(RLIMIT_MEMLOCK, &amp;rlim);
-    if (err) {
-        fprintf(stderr, &quot;failed to change rlimit\n&quot;);
-        return 1;
-    }
-
-
-    obj = hello_bpf__open();
-    if (!obj) {
-        fprintf(stderr, &quot;failed to open and/or load BPF object\n&quot;);
-        return 1;
-    }
-
-    err = hello_bpf__load(obj);
-    if (err) {
-        fprintf(stderr, &quot;failed to load BPF object %d\n&quot;, err);
-        goto cleanup;
-    }
-
-    err = hello_bpf__attach(obj);
-    if (err) {
-        fprintf(stderr, &quot;failed to attach BPF programs\n&quot;);
-        goto cleanup;
-    }
-
-    read_trace_pipe();
-
-cleanup:
-    hello_bpf__destroy(obj);
-    return err != 0;
-}</code></pre>
-<p><strong>bpf/bpf.h</strong> (libbpf headers for userspace applications): defines various userspace bpf helpers for working with BPF programs and maps</p>
-<p><strong>bpf/libbpf.h</strong> (libbpf headers for userspace applications) : includes libbpf types and functions.</p>
-<p><strong>hello.skel.h</strong> (hello.bpf.o + bpftool): contains a collection of functions and data structures to help load the BPF program and work with its maps, and a generated structure that describes the program that will be loaded.</p>
-<ul>
-<li>define the hello_bpf object and open, load and attach the program (All the generated skeleton code starts with hello_bpf_*). Call <code>read_trace_pipe</code> function. After that we can clean up the program and exit:
-<ul>
-<li>struct hello_bpf *obj</li>
-<li>obj = hello_bpf__open()</li>
-<li>hello_bpf__load(obj)</li>
-<li>hello_bpf__attach(obj)</li>
-<li>hello_bpf__destroy(obj)</li>
-</ul></li>
-</ul>
-<p><strong>struct rlimit rlim</strong>: set appropriate rlimits to allow BPF sub-system to do anything</p>
-</div>
-<div id="maps" class="section level3" number="1.3.2">
-<h3><span class="header-section-number">1.3.2</span> maps</h3>
-<p>maps.h:</p>
-<pre class="r"><code>#ifndef _MAPS_H
-#define _MAPS_H
-
-#define TASK_COMM_LEN 16
-
-struct event {
-    char comm[TASK_COMM_LEN];
-    pid_t pid;
-    uid_t uid;
-};
-
-#endif</code></pre>
-<p>store the PID, UID and the command line used to invoke the program.</p>
-<p>maps.bpf.c:</p>
-<pre class="r"><code>#include &quot;vmlinux.h&quot;
-#include &lt;bpf/bpf_helpers.h&gt;
-#include &quot;maps.h&quot;
-
-struct {
-    __uint(type, BPF_MAP_TYPE_HASH);
-    __uint(max_entries, 128);
-    __type(key, pid_t);
-    __type(value, struct event);
-} execs SEC(&quot;.maps&quot;);
-
-SEC(&quot;tracepoint/syscalls/sys_enter_execve&quot;)
-int tracepoint__syscalls__sys_enter_execve(struct trace_event_raw_sys_enter *ctx)
-{
-    struct event *event;
-    pid_t pid;
-    u64 id;
-    uid_t uid = (u32) bpf_get_current_uid_gid();
-
-    id = bpf_get_current_pid_tgid();
-    pid = (pid_t)id;
-
-    if (bpf_map_update_elem(&amp;execs, &amp;pid, &amp;((struct event){}), 1)) {
-        return 0;
-    }
-
-    event = bpf_map_lookup_elem(&amp;execs, &amp;pid);
-    if (!event) {
-        return 0;
-    }
-
-    event-&gt;pid = pid;
-    event-&gt;uid = uid;
-    bpf_get_current_comm(&amp;event-&gt;comm, sizeof(event-&gt;comm));
-
-    /*
-    if (bpf_map_update_elem(&amp;execs, &amp;pid, event, 2)) {
-        return 0;
-    }
-    */
-
-    return 0;
-}
-
-char LICENSE[] SEC(&quot;license&quot;) = &quot;GPL&quot;;</code></pre>
-<ul>
-<li><strong>execs SEC(“.maps”)</strong>: map definition. Place them in the “.maps” section so that the userspace loader can load and set up the maps properly.
-<ul>
-<li>A hash map that works like a hash table. Maximum of 128 entries, where the key is the PID, and the value is a struct that will track execve arguments (maps.h).</li>
-</ul></li>
-<li><strong>struct event *event</strong>: create an event structure and fill it with data from the syscall.
-<ul>
-<li>bpf_get_current_uid_gid() (bpf helper functions provided by the kernel) : Retrieve UID</li>
-<li>bpf_get_current_pid_tgid() (bpf helper functions provided by the kernel) : Retrieve PID</li>
-</ul></li>
-</ul>
-<p><strong>if (bpf_map_update_elem())</strong> : This call succeeds if the event for the PID doesn’t exist and sets the value to an empty event.</p>
-<p><strong>event = bpf_map_lookup_elem()</strong> : capture only one exec event per PID (using a hash map), and retrieve the entry associated with our current PID (posiible muitiple event per PID)</p>
-<p><strong>bpf_get_current_comm()</strong> (kernel bpf helper): retrieves the command line and store it.</p>
-<p>maps.c:</p>
-<pre class="r"><code>#include &lt;sys/types.h&gt;
-#include &lt;sys/stat.h&gt;
-#include &lt;fcntl.h&gt;
-#include &lt;unistd.h&gt;
-#include &lt;sys/resource.h&gt;
-#include &lt;argp.h&gt;
-
-#include &lt;bpf/libbpf.h&gt;
-#include &lt;bpf/bpf.h&gt;
-
-#include &quot;maps.skel.h&quot;
-#include &quot;maps.h&quot;
-
-static struct env {
-    bool verbose;
-} env = {
-    .verbose = false,
-};
-
-const char *argp_program_version = &quot;bpf loggin example&quot;;
-const char argp_program_doc[] = 
-&quot;An example BPF CO-RE application that demonstrates a libbpf maps set up\n&quot;;
-static const struct argp_option opts[] = {
-    {NULL, &#39;h&#39;, NULL, OPTION_HIDDEN, &quot;Show the full help&quot;},
-    {&quot;verbose&quot;, &#39;v&#39;, NULL, 0, &quot;verbose debug output&quot;},
-    {},
-};
-
-int libbpf_print_fn(enum libbpf_print_level level,
-        const char *format, va_list args)
-{
-    if (level == LIBBPF_DEBUG &amp;&amp; !env.verbose) {
-        return 0;
-    }
-
-    return vfprintf(stderr, format, args);
-}
-
-static error_t parse_arg(int key, char *arg, struct argp_state *state)
-{
-    switch (key) {
-    case &#39;v&#39;:
-        env.verbose = true;
-        break;
-    case &#39;h&#39;:
-        argp_usage(state);
-        break;
-    default:
-        return ARGP_ERR_UNKNOWN;
-
-    }
-
-    return 0;
-}
-
-static int print_execs(int fd)
-{
-    int err;
-    struct event ev;
-    pid_t lookup_key = 0, next_key;
-
-    while (!bpf_map_get_next_key(fd, &amp;lookup_key, &amp;next_key)) {
-        err = bpf_map_lookup_elem(fd, &amp;next_key, &amp;ev);
-        if (err &lt; 0) {
-            fprintf(stderr, &quot;failed to lookup exec: %d\n&quot;, err);
-            return -1;
-        }
-        printf(&quot;\nProcess Name = %s, uid = %u, pid = %u\n&quot;, ev.comm, ev.uid, ev.pid);
-        err = bpf_map_delete_elem(fd, &amp;next_key);
-        if (err &lt; 0) {
-            fprintf(stderr, &quot;failed to cleanup execs : %d\n&quot;, err);
-            return -1;
-        }
-        lookup_key = next_key;
-    }
-
-    return 0;
-}
-
-int main(int argc, char **argv) {
-    struct maps_bpf *obj;
-    int err = 0;
-    struct rlimit rlim = {
-        .rlim_cur = 512UL &lt;&lt; 20,
-        .rlim_max = 512UL &lt;&lt; 20,
-    };
-    const struct argp argp = {
-        .options = opts,
-        .parser = parse_arg,
-        .doc = argp_program_doc,
-    };
-    int fd;
-
-    err = setrlimit(RLIMIT_MEMLOCK, &amp;rlim);
-    if (err) {
-        fprintf(stderr, &quot;failed to change rlimit\n&quot;);
-        return 1;
-    }
-
-    err = argp_parse(&amp;argp, argc, argv, 0, NULL, NULL);
-    if (err) {
-        fprintf(stderr, &quot;failed to parse command line arguments\n&quot;);
-        return 1;
-    }
-
-    libbpf_set_print(libbpf_print_fn);
-    
-    obj = maps_bpf__open();
-    if (!obj) {
-        fprintf(stderr, &quot;failed to open and/or load BPF object\n&quot;);
-        return 1;
-    }
-
-    err = maps_bpf__load(obj);
-    if (err) {
-        fprintf(stderr, &quot;failed to load BPF object %d\n&quot;, err);
-        goto cleanup;
-    }
-
-    err = maps_bpf__attach(obj);
-    if (err) {
-        fprintf(stderr, &quot;failed to attach BPF programs\n&quot;);
-        goto cleanup;
-    }
-
-    fd = bpf_map__fd(obj-&gt;maps.execs);
-
-    printf(&quot;printing executed commands\n&quot;);
-
-    while (1) {
-        print_execs(fd);
-        fd = bpf_map__fd(obj-&gt;maps.execs);
-    }
-
-cleanup:
-    maps_bpf__destroy(obj);
-    return err != 0;
-}</code></pre>
-<p><strong>libbpf_print_fn()</strong>: user-defined callback used by libbpf to print useful information</p>
-<p><strong>print_execs()</strong>: iterate through the map and print the data</p>
-<p><strong>libbpf_set_print(libbpf_print_fn)</strong>: set up verbose libbpf logging to ease debugging</p>
-<p>**bpf_map__fd()** : retrieve the file descriptor associated with the map. The obj-&gt;maps structure (skeleton) contains all the maps associated with the opened BPF program.</p>
 </div>
 </div>
 </div>
@@ -830,16 +456,12 @@ clang -Wall -O2 -g maps.o libbpf/build/libbpf.a -lelf -lz -o maps</code></pre>
 <div id="參考資料" class="section level1" number="4">
 <h1><span class="header-section-number">4</span> 參考資料</h1>
 <ul>
+<li><a href="https://nakryiko.com/posts/bpf-portability-and-co-re/">BPF CO-RE (Compile Once – Run Everywhere)</a></li>
+<li><a href="https://nakryiko.com/posts/bcc-to-libbpf-howto-guide/">BCC to libbpf conversion guide</a></li>
 <li><a href="https://github.com/libbpf/libbpf">Libbpf github page</a></li>
 <li><a href="https://ostechnix.com/upgrade-to-debian-11-bullseye-from-debian-10-buster/">How To Upgrade To Debian 11 Bullseye From Debian 10 Buster</a></li>
 <li><a href="https://www.sartura.hr/blog/simple-ebpf-core-application/">Simple eBPF CO-RE Application</a></li>
 </ul>
-</div>
-<div class="footnotes">
-<hr />
-<ol>
-<li id="fn1"><p><a href="https://www.man7.org/linux/man-pages/man7/bpf-helpers.7.html">bpf-helpers manpage</a><a href="#fnref1" class="footnote-back">↩︎</a></p></li>
-</ol>
 </div>
 
 
