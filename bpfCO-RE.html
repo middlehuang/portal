@@ -247,7 +247,7 @@ pre code {
 <li>雖然會讓 kernel image 多出 1.5 Mb，但比 DWARF 的 177 Mb 還要輕巧許多，資料空間相當<strong>緊緻</strong></li>
 <li>提供<strong>所有 internal kernel types</strong>，像是大小和配置等等，這樣就<strong>不必在目標環境安裝 kernel headers</strong>
 <ul>
-<li>透過 <code>bpftool btf dump file /sys/kernel/btf/vmlinux format c &gt; vmlinux.h</code> 來獲得所有 kernel types (包含 kernel-devel 套件提供的訊息) 的 C 標頭檔，但是要注意 BTF 和 BWARF 都沒有紀錄 <code>#define</code> 巨集，所以有些常見的巨集可能不在 <code>vmlinux.h</code> 內，大多數缺少的巨集可能在 <code>bpf_helpers.h</code> (由 libbpf 提供，可以當成 kernel 側的函式庫) 找到</li>
+<li>透過 <code>bpftool btf dump file /sys/kernel/btf/vmlinux format c &gt; vmlinux.h</code> 來獲得所有 kernel types (包含 kernel-devel 套件提供的訊息) 的 C 標頭檔，但是要注意 BTF 和 DWARF 都沒有紀錄 <code>#define</code> 巨集，所以有些常見的巨集可能不在 <code>vmlinux.h</code> 內，大多數缺少的巨集可能在 <code>bpf_helpers.h</code> (由 libbpf 提供，可以當成 kernel 側的函式庫) 找到</li>
 </ul></li>
 <li>總是<strong>和 kernel 同步</strong></li>
 <li>把 BTF <strong>轉成 C</strong> 不會有資訊損失</li>
@@ -324,8 +324,10 @@ pre code {
 </ul></li>
 <li><code>bpf_map_&lt;operation&gt;_elem(&amp;some_map, &amp;keyvar[, &amp;valuevar][, args])</code> 是在 kernel 對 map 進行操作的函數，常見的 operation 有 lookup, update, delete, push, pop,peek 等</li>
 </ul></li>
-<li>可以在這裡定義全域變數，它可以被 BPF 程式碼讀取和更新
-碼 <code>&lt;app&gt;.c</code>: 載入 BPF 程式碼並在應用程式生命週期和其互動的使用者空間 C 程式碼，在宣告全域變數的前方加入 <code>const volatile</code> 代表其在 BPF 程式碼和使用者空間程式碼都是唯讀</li>
+<li>可以在這裡定義全域變數，它可以被 BPF 程式碼讀取和更新</li>
+</ul></li>
+<li><code>&lt;app&gt;.c</code>: 載入 BPF 程式碼並在應用程式生命週期和其互動的使用者空間 C 程式碼，在宣告全域變數的前方加入 <code>const volatile</code> 代表其在 BPF 程式碼和使用者空間程式碼都是唯讀
+<ul>
 <li>引入 <code>&lt;app&gt;.skel.h</code>，對應 BPF C 的高階結構，藉由將編譯好的 BPF 物件程式碼內容貼在標頭檔內來簡化 BPF 程式碼的部署，從 kernel 5.5 版開始，使用者空間程式能透過它讀取和改寫全域變數</li>
 <li><code>libbpf_set_print()</code> 可以客製化 libbpf 日誌輸出，對於程式除錯非常有用</li>
 <li>提升 <code>RLIMIT_MEMLOCK</code> 極限，最簡單的方法是 <code>setrlimit(RLIMIT_MEMLOCK, ...)</code>，提升 kernel 使用者內部記憶體上限，讓 BPF 子系統可以分配必要資源給 BPF 程式、maps 等等，</li>
