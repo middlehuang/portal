@@ -177,8 +177,7 @@ pre code {
 <ul>
 <li><a href="#什麼是-bpf"><span class="toc-section-number">1.1</span> 什麼是 BPF ?</a></li>
 <li><a href="#什麼是-bpf-co-re-compile-once-run-everywhere"><span class="toc-section-number">1.2</span> 什麼是 BPF CO-RE (Compile-Once Run-Everywhere)?</a></li>
-<li><a href="#bpf-co-re-編譯環境軟體需求"><span class="toc-section-number">1.3</span> BPF CO-RE 編譯環境軟體需求</a></li>
-<li><a href="#bpf-co-re-說明"><span class="toc-section-number">1.4</span> BPF CO-RE 說明</a></li>
+<li><a href="#bpf-co-re-說明"><span class="toc-section-number">1.3</span> BPF CO-RE 說明</a></li>
 </ul></li>
 <li><a href="#準備主要編譯環境將-debian10-升級至-debian11"><span class="toc-section-number">2</span> 準備主要編譯環境：將 Debian10 升級至 Debian11</a>
 <ul>
@@ -200,14 +199,17 @@ pre code {
 <p>本章節簡介 BPF 與其開發用工具 BCC 的問題，BPF CO-RE 的發明和關鍵技術說明，以及 BPF 程式的結構和編譯方法</p>
 <div id="什麼是-bpf" class="section level2" number="1.1">
 <h2><span class="header-section-number">1.1</span> 什麼是 BPF ?</h2>
-<p>Berkeley Packet Filter (BPF)，是一種非常有彈性、效率佳、在 Linux kernel 執行的虛擬機器，它讓 bytecode 在各種 Linux kernel 子系統內的 hook 裡，經過加載和認證後可以安全地被執行，這些程式在 kernel 記憶體空間內執行並可以取得對應的 internel kernel state。BPF 主要用於網路、追蹤和資安。</p>
-<p>一般 BPF 程式是在目標環境編譯，理由是：</p>
+<p>Berkeley Packet Filter (BPF)，是一種非常有彈性、效率佳、在 Linux kernel 執行的虛擬機器，它讓 bytecode 在各種 Linux kernel 子系統內的 hook 裡，經過加載和認證後可以安全地被執行，這些程式在 kernel 記憶體空間內執行並可以取得對應的 internel kernel state。BPF 主要用於網路、追蹤和資安</p>
+<p>一般 BPF 程式會在目標環境進行編譯，理由是：</p>
 <ul>
-<li>獲得 kernel struct 物件資訊，因為 kernel struct 和其 field 會隨著版本移動、重新命名、改變類型或刪除</li>
+<li>獲得目標 kernel 的 struct 物件資訊，因為 kernel struct 和其 field 會隨著版本移動、重新命名、改變類型或刪除</li>
 <li>記憶體配置會隨著 kernel 版本/設定而有所<strong>改變</strong></li>
 <li>BPF 程式以<strong>固定</strong>的誤差/大小進行編譯</li>
 </ul>
-<p>因為上述理由，BPF 開發者使用 BCC (BPF Compiler Collection) 進行開發。BCC 會把 BPF 程式的 C 程式碼以<strong>純字串</strong>形式貼在使用者空間程式 (控制型應用程式) 上，當控制型應用程式最後在目標端被部署和執行時，BCC 使用隨附的 Clang/LLVM 將當地 kernel headers (你必須確保目標系統透過正確的 kernel-devel 套件來安裝) 拉入，然後在當地進行編譯，這樣可以保證 BPF 程式期望的記憶體配置和目標端使用的 kernel 相同。如果你要處理一些客製 kernel 的不同架構，像是重新命名的 field、不同的價值定義、或是任何現今沒有的選擇性設定，可以用 <code>#ifdef/#else</code> 處理。隨附的 clang 會移除你程式碼不相關的部分並協助把 BPF 程式碼嵌入目標 kernel</p>
+<p>因此，早期 BPF 開發者會使用 BCC 工具進行開發</p>
+<div id="bcc-bpf-compiler-collection-工具簡介和開發缺點" class="section level3" number="1.1.1">
+<h3><span class="header-section-number">1.1.1</span> BCC (BPF Compiler Collection) 工具簡介和開發缺點</h3>
+<p>BCC 會把 BPF 程式的 C 程式碼以<strong>純字串</strong>形式貼在使用者空間程式(控制型應用程式)上，當控制型應用程式最後在目標端被部署和執行時，執行檔使用隨附的 Clang/LLVM 將當地 kernel headers (你必須確保目標系統透過正確的 kernel-devel 套件來安裝) 拉入，然後在當地進行編譯，這樣可以保證 BPF 程式期望的記憶體配置和目標端使用的 kernel 相同。如果你要處理一些客製 kernel 的不同架構，像是重新命名的 field、不同的價值定義、或是任何現今沒有的選擇性設定，可以用 <code>#ifdef/#else</code> 處理。隨附的 clang 會移除你程式碼不相關的部分並協助把 BPF 程式碼嵌入目標 kernel</p>
 <p>這過程可以實現，但是有以下缺點</p>
 <ul>
 <li>所有目標環境都<strong>需要 kernel headers 套件</strong>
@@ -215,25 +217,26 @@ pre code {
 <li>需要 kernel-devel 套件，少了它 BCC 就無法執行</li>
 <li>kernel-devel 不提供內部標頭檔，如果你需要公開標頭檔沒有暴露的東西，你需要在 BPF 程式碼手動複製貼上 type 定義來讓它可以運作</li>
 <li>對 kernel 開發者而言，他們必須常常建造和部署自訂 kernel 作為開發過程的一部份，很麻煩</li>
-<li>kernel-devel 會不同步</li>
+<li>kernel-devel 有時會不同步</li>
 </ul></li>
 <li>clang/LLVM 非常<strong>佔空間</strong>
 <ul>
 <li>libbcc.so &gt; 100MB，部署你應用程式所使用的 binary 就佔用許多空間</li>
-<li>編譯過程會使用大量 CPU 和記憶體資源，繁忙的機器上容易因為編譯而失去平衡</li>
+<li>編譯過程會使用大量 CPU 和記憶體資源，繁忙的機器上容易因為此編譯過程而失去平衡</li>
 </ul></li>
 <li>測試和開發迭代很麻煩
 <ul>
 <li>各種不同 kernel 版本/設定要測試</li>
 <li>在測試環境下成功不見得代表在目標環境下也能成功</li>
-<li>BPF 程式在此開發工具下是在執行 binary 的時候才進行編譯，在你重新建立和徹底重新啟動你的使用者空間應用程式之後，就連簡單的編譯錯誤訊息也只能在執行狀態下才能偵測到，這會大幅增加迭代難度</li>
+<li>BPF 程式使用 BCC 開發工具會在執行 binary 的時候才進行編譯，在你重新建立和徹底重新啟動你的使用者空間應用程式之後，就連簡單的編譯錯誤訊息也只能在執行狀態下才能偵測到，這會大幅增加迭代難度</li>
 </ul></li>
 </ul>
+<p>為了應付 BCC 的問題，BPF 開發者有個想法: 能不能編譯一次，然後在所有環境執行 binary? 於是 BPF CO-RE 在後續關鍵技術誕生之後就問世了</p>
+</div>
 </div>
 <div id="什麼是-bpf-co-re-compile-once-run-everywhere" class="section level2" number="1.2">
 <h2><span class="header-section-number">1.2</span> 什麼是 BPF CO-RE (Compile-Once Run-Everywhere)?</h2>
-<p>為了應付 BCC 的問題，BPF 開發者有個想法:能不能編譯一次，然後在所有環境執行 binary? 於是 BPF CO-RE 在後續關鍵技術誕生之後就問世了</p>
-<p>BPF CO-RE 的核心概念認為 BPF 程式和普通使用者空間程式沒什麼不同：它們要被編譯一次成一個小 binary 檔案，在未經修改的緊緻型下部署至目標環境，要達成的目標是:</p>
+<p>BPF CO-RE 的核心概念認為 BPF 程式和普通使用者空間程式沒什麼不同: 它們要被編譯一次成一個小 binary 檔案，在未經修改的緊緻型狀態下部署至目標環境，要達成的目標是:</p>
 <ul>
 <li>目標環境不需要 kernel-headers</li>
 <li>不需要在目標環境編譯</li>
@@ -245,13 +248,35 @@ pre code {
 <li>BTF (BPF Type Format)，更確切地說，是消除重複資料的 BTF 訊息，作爲更一般且冗長的 DWARF 除錯訊息的替代品而被創造出來
 <ul>
 <li>雖然會讓 kernel image 多出 1.5 Mb，但比 DWARF 的 177 Mb 還要輕巧許多，資料空間相當<strong>緊緻</strong></li>
-<li>提供<strong>所有 internal kernel types</strong>，像是大小和配置等等，這樣就<strong>不必在目標環境安裝 kernel headers</strong>
-<ul>
-<li>透過 <code>bpftool btf dump file /sys/kernel/btf/vmlinux format c &gt; vmlinux.h</code> 來獲得所有 kernel types (包含 kernel-devel 套件提供的訊息) 的 C 標頭檔，但是要注意 BTF 和 DWARF 都沒有紀錄 <code>#define</code> 巨集，所以有些常見的巨集可能不在 <code>vmlinux.h</code> 內，大多數缺少的巨集可能在 <code>bpf_helpers.h</code> (由 libbpf 提供，可以當成 kernel 側的函式庫) 找到</li>
-</ul></li>
+<li>提供<strong>所有 internal kernel types</strong>，像是大小和配置等等，這樣就<strong>不必在目標環境安裝 kernel headers</strong></li>
 <li>總是<strong>和 kernel 同步</strong></li>
 <li>把 BTF <strong>轉成 C</strong> 不會有資訊損失</li>
-<li>讓 kernel 支援 BTF 最簡單的做法是編譯 kernel 時讓 <code>CONFIG_DEBUG_INFO_BTF=y</code> (需要來自 DWARF 套件的 pahole 版本 1.13 以上)，一些常用 linux 版本預設值就有這個:
+</ul></li>
+<li>compiler (Clang): 編譯 BPF 程式時提供其在 kernel 重新定位的方法，例如你要取得 <code>task_struct-&gt;pid</code> field，clang 會記錄 <code>struct task_struct</code> 內 type “pid_t” 的 field 名稱 “pid”，這樣就算 “pid” 被移動到 <code>struct task_struct</code> 內的不同層次，你還是可以依靠其名稱和 type 找到它，這稱為 <strong>field offset relocation</strong>，也可以記錄 <strong>field 存在性</strong>和<strong>field 大小</strong></li>
+<li>user-space BPF loader library (libbpf): 由 kernel 開發者提供，用來開發 BPF 程式，也作為 BPF 程式的載入工具
+<ul>
+<li>使用已編譯好的 BPF ELF (Executable and Link File) 檔，藉由 BPF 程式記錄的 BTF type 和 clang 提供的重新定位訊息對應至執行 kernel 上提供的 BTF 訊息，配對所有 types 和 fields，必要時更新 offsets 和其它可重新放置的資料以確保 BPF 程式邏輯可以在目標 kernel 正確運作，設置各種 kernel 物件 (maps，程式等等)，觸發 BPF 程式的載入和驗證。開發者只需要注意 BPF 程式的正確性和性能，<strong>不需要在應用程式內附加 clang，也不需要在目標環境執行時進行編譯</strong></li>
+<li>提供 Kconfig 外部變數，libbpf 會讓 BPF 程式可以兼容多種 kernel 特定版本和組態的變化，如同使用全域變數般使用這些外部變數，如 <code>LINUX_KERNEL_VERSION</code> 和來自 Kconfig 的 <code>CONFIG_xxx</code> 等等，這些變數會有正確的值且對應至 BPF 程式執行的 kernel，另外 BPF 驗證程式會把這些變數當作已知常數進行追蹤，並且作為進階程式流控制分析和多餘程式移除使用</li>
+<li>提供 struct flavors，不同 kernel 之間出現不相容的 types 時，就無法以單一共同 struct 定義來編譯單一 BPF 程式使其同時適用於不同 kernel。在進行必要的重新定位時，struct flavors 讓多型 type 定義可以對應到目標 kernel 的同一個 struct 上，這讓在單一 C 程式內同一個 kernel type 可以有多個替代(且彼此不相容)的定義，在執行階段可以選出最適當的定義並使用 <strong>type 對應至 struct flavor</strong> 來獲得必要的 fields。要是缺少這功能，就無法僅編譯一次就在不同 kernel 上執行，你需要靠 <code>#ifdef</code> 處理原程式碼，編譯成至少二個分開的 BPF 程式變化型，在執行階段由控制型應用程式手動選出適當的類型，這樣會增加非必要的複雜度和負擔</li>
+</ul></li>
+<li>bpftool: 協助 BPF 程式開發流程的實用工具
+<ul>
+<li><code>bpftool btf dump file /sys/kernel/btf/vmlinux format c &gt; vmlinux.h</code> 可以獲得包含所有 kernel types (包含 kernel-devel 套件提供的訊息)資訊的 C 標頭檔</li>
+<li><code>bpftool gen skeleton &lt;app&gt;.bpf.o &gt; &lt;app&gt;.skel.h</code> 將 BPF binary 轉成 skeleton 標頭擋給使用者空間程式使用</li>
+<li><code>bpftool prog -p</code> 可以查看正在執行的 BPF 程式細節</li>
+<li><code>bpftool link</code> 可以查看連接到 BPF 的 link</li>
+<li><code>bpftool feature</code> 可以查看支援不同 BPF 程式類型的 BPF 輔助函數</li>
+</ul></li>
+</ul>
+<p>產物的是一個包含預先編譯好 BPF bytecode 的輕巧 ELF binary，它可以在任何地方執行 (不需要 clang/LLVM)，大幅降低儲存所需空間和執行時間，進而讓 BPF 支援更多硬體環境，優化軟體工程師的開發體驗。來自 BCC 的 libbpf-tools 現在有許多的程式支援 CO-RE</p>
+</div>
+</div>
+<div id="bpf-co-re-說明" class="section level2" number="1.3">
+<h2><span class="header-section-number">1.3</span> BPF CO-RE 說明</h2>
+<div id="bpf-co-re-編譯環境軟體需求" class="section level3" number="1.3.1">
+<h3><span class="header-section-number">1.3.1</span> BPF CO-RE 編譯環境軟體需求</h3>
+<ul>
+<li>kernel 必須含有 BTF 除錯訊息，最簡單的做法是編譯 kernel 時提供 <code>CONFIG_DEBUG_INFO_BTF=y</code> 組態設定(需要來自 DWARF 套件的 pahole 版本 1.13 以上)，一些新的 linux 版本預設組態設定就有它:
 <ul>
 <li>Fedora 31+</li>
 <li>RHEL 8.2+</li>
@@ -261,31 +286,8 @@ pre code {
 <li>Ubuntu 20.10</li>
 <li>Debian 11 (amd64/arm64)</li>
 </ul></li>
-</ul></li>
-<li>compiler (Clang): 編譯 BPF 程式時提供其在 kernel 重新定位的方法，例如你要取得 <code>task_struct-&gt;pid</code> field，clang 會記錄 <code>struct task_struct</code> 內 type “pid_t” 的 field 名稱 “pid”，這樣就算 “pid” 被移動到 <code>struct task_struct</code> 內的不同層次，你還是可以依靠其名稱和 type 找到它，這稱為 <strong>field offset relocation</strong>，也可以記錄 <strong>field 存在性</strong>和<strong>field 大小</strong></li>
-<li>user-space BPF loader library (libbpf): 由 kernel 開發者提供，用來開發 BPF 程式，也作為 BPF 程式的載入工具
-<ul>
-<li>使用已編譯好的 BPF ELF (Executable and Link File) 檔，藉由 BPF 程式記錄的 BTF type 和重新定位訊息對應至執行 kernel 上提供的 BTF 訊息，配對所有 types 和 fields，必要時更新 offsets 和其它可重新放置的資料以確保 BPF 程式邏輯可以在目標 kernel 正確運作，設置各種 kernel 物件 (maps，程式等等)，觸發 BPF 程式的載入和驗證。開發者只需要注意 BPF 程式的正確性和性能，<strong>不需要在應用程式內附加 clang，也不需要在目標環境執行時進行編譯</strong></li>
-<li>提供 Kconfig 外部變數，libbpf 會讓 BPF 程式可以兼容多種 kernel 特定版本和組態的變化，如同使用全域變數般使用這些外部變數，如 <code>LINUX_KERNEL_VERSION</code> 和來自 Kconfig 的 <code>CONFIG_xxx</code> 等等，這些變數會有正確的值且對應至 BPF 程式執行的 kernel，另外 BPF 驗證程式會把這些變數當作已知常數進行追蹤，並且作為進階程式流控制分析和多餘程式移除使用</li>
-<li>提供 struct flavors，不同 kernel 之間出現不相容的 types 時，就無法以單一共同 struct 定義編譯單一 BPF 程式同時適用於不同 kernel，在進行必要的重新定位時，struct flavors 讓多型 type 定義可以對應到目標 kernel 的同一個 struct 上，這讓在單一 C 程式內同一個 kernel type 可以有多個替代(且彼此不相容)的定義，在執行階段可以選出最適當的定義並使用 <strong>type 對應至 struct flavor</strong> 來獲得必要的 fields。要是缺少這功能，就無法僅編譯一次就在不同 kernel 上執行，你需要靠 <code>#ifdef</code> 處理原程式碼，編譯成二個分開的 BPF 程式變化型，在執行階段由控制型應用程式手動選出適當的類型，這樣會增加非必要的複雜度和負擔</li>
-</ul></li>
-<li>bpftool: 針對 BPF 開發流程的實用工具
-<ul>
-<li>在編譯環境產生 <strong>vmlinux.h</strong> ，這是包含所有 kernel types 的標頭擋</li>
-<li>將 BPF binary 轉成 skeleton 標頭擋讓使用者空間程式使用</li>
-<li><code>bpftool prog -p</code> 可以查看正在執行的 BPF 程式細節</li>
-<li><code>bpftool link</code> 可以查看連接到 BPF 的 link</li>
-<li><code>bpftool feature</code> 可以查看支援不同 BPF 程式類型的 BPF 輔助函數</li>
-</ul></li>
-</ul>
-<p>產物的是一個包含預先編譯好 BPF bytecode 的輕巧 ELF binary，它可以在任何地方執行 (不需要 clang/LLVM)，大幅降低儲存所需空間和執行時間，進而讓 BPF 支援更多硬體環境，優化軟體工程師的開發體驗，來自 BCC 的 libbpf-tools 現在有許多的程式支援 CO-RE</p>
-</div>
-</div>
-<div id="bpf-co-re-編譯環境軟體需求" class="section level2" number="1.3">
-<h2><span class="header-section-number">1.3</span> BPF CO-RE 編譯環境軟體需求</h2>
-<ul>
-<li>對於大多數 BPF feature 而言，clang 10 或以上就夠了，但一些更進階的 BPF CO-RE feature 可能需要 clang 11 甚至 12 (例如一些近期先進的 BPF CO-RE relocation build-in)</li>
-<li>安裝 libbpf
+<li>安裝 clang，對於大多數 BPF feature 而言，clang 10 或以上就夠了，但一些更進階的 BPF CO-RE feature 可能需要 clang 11 甚至 12 (例如一些近期先進的 BPF CO-RE relocation build-in)</li>
+<li>安裝 libbpf，其相依套件包括:
 <ul>
 <li>zlib (libz-dev 或 zlib-devel 套件)</li>
 <li>libelf (libelf-dev 或 elfutils-libelf-devel 套件)</li>
@@ -293,15 +295,9 @@ pre code {
 <li>安裝 bpftool</li>
 </ul>
 </div>
-<div id="bpf-co-re-說明" class="section level2" number="1.4">
-<h2><span class="header-section-number">1.4</span> BPF CO-RE 說明</h2>
-<div id="bpf-co-re-範例程式碼" class="section level3" number="1.4.1">
-<h3><span class="header-section-number">1.4.1</span> BPF CO-RE 範例程式碼</h3>
-<p>要學習 BPF CO-RE 架構，你可以參考<a href="https://github.com/sartura/ebpf-core-sample">sartura 的範例</a>、<a href="https://github.com/libbpf/libbpf-bootstrap">libbpf-bootstrap 範例</a>、或是<a href="https://github.com/iovisor/bcc/tree/master/libbpf-tools">BCC 的 libbpf-tools 範例</a></p>
-</div>
-<div id="bpf-maps-說明" class="section level3" number="1.4.2">
-<h3><span class="header-section-number">1.4.2</span> BPF maps 說明</h3>
-<p>BPF maps 是抽象資料容器，使用 key/valu 結構形式，用於在使用者空間程式和 kernel 的 BPF 程式之間交換資料，在 BPF 程式定義 maps 資料結構 (少數不會遵照此格式，如 PERF_EVENT_ARRAY, STACK_TRACE, DEVMAP, CPUMAP 等等):</p>
+<div id="bpf-maps-說明" class="section level3" number="1.3.2">
+<h3><span class="header-section-number">1.3.2</span> BPF maps 說明</h3>
+<p>BPF maps 是抽象資料容器，許多使用 key/valu 結構形式定義，用於在使用者空間程式和 kernel 的一或多個 BPF 程式之間交換資料，在 BPF 程式定義 maps 資料結構 (少數不會遵照此格式，如 PERF_EVENT_ARRAY, STACK_TRACE, DEVMAP, CPUMAP 等等):</p>
 <pre class="r"><code>struct {
     __uint(type, BPF_MAP_TYPE_&lt;類型&gt;); /* 填入 ARRAY, HASH, PERCPU_ARRAY, ...*/
     __uint(max_entries, &lt;最大元素數目&gt;);
@@ -309,51 +305,61 @@ pre code {
     __type(value, &lt;價值形式&gt;); /* 如果是物件，其定義位於標頭檔，手動定義或來自 vmlinux.h 皆可 */
 } &lt;map 名稱&gt; SEC(&quot;.maps&quot;);</code></pre>
 </div>
-<div id="bpf-co-re-程式碼檔案和架構" class="section level3" number="1.4.3">
-<h3><span class="header-section-number">1.4.3</span> BPF CO-RE 程式碼檔案和架構</h3>
+<div id="bpf-co-re-編譯步驟" class="section level3" number="1.3.3">
+<h3><span class="header-section-number">1.3.3</span> BPF CO-RE 編譯步驟</h3>
+<p>建造 BPF CO-RE 程式需要以下步驟:</p>
+<ul>
+<li>製造含有所有 kernel types 的 <code>vmlinux.h</code> 標頭檔</li>
+<li>使用近期的 clang (版本 10 或以上) 將 BPF 原程式碼編譯成 <code>.bpf.o</code> 物件檔，如果可以，用 llvm 將多餘的 DWARF 資訊剝掉</li>
+<li>由編譯好的 BPF 物件檔製造 BPF skeleton 標頭檔</li>
+<li>將使用者空間程式碼引用製造的 BPF skeleton 標頭檔，編譯成 ELF bytecode，這樣 BPF 物件程式碼就會附加在裏面，你的應用程式就不用隨附其他檔案</li>
+</ul>
+</div>
+<div id="bpf-co-re-程式碼檔案和架構" class="section level3" number="1.3.4">
+<h3><span class="header-section-number">1.3.4</span> BPF CO-RE 程式碼檔案和架構</h3>
 <p>BPF 程式碼檔案有三種，以下介紹它們以及其內部需要引用的函式庫和變數</p>
 <ul>
 <li><code>&lt;app&gt;.bpf.c</code>: 含有在 kernel 執行內容的 BPF C 程式碼，你可以在此定義許多 BPF 程式，相同或不同種類皆可，它們會共享全域狀態，常利用來讓彼此互動
 <ul>
-<li>引入 <code>vmlinux.h</code>: 含有所有 kernel types</li>
-<li><code>bpf_helpers.h</code>: 由 <code>libbpf</code> 提供，含有最常用的巨集、常數、以及幾乎每個 BPF 應用程式都會使用的 BPF helper 定義
+<li>可以在這裡定義全域變數，它可以被 BPF 程式碼讀取和更新。在宣告全域變數的前方加入 <code>const volatile</code> 代表其在 BPF 程式碼和使用者空間程式碼都是唯讀</li>
+<li>引入 <code>vmlinux.h</code>: 含有所有 kernel types，但是要注意 BTF 和 DWARF 都沒有紀錄 <code>#define</code> 巨集，所以有些常見的巨集可能不在 <code>vmlinux.h</code> 內，大多數缺少的巨集可能在 <code>bpf_helpers.h</code> 找到</li>
+<li>引入 <code>bpf_helpers.h</code>: 由 <code>libbpf</code> 提供，含有最常用的巨集、常數、以及幾乎每個 BPF 應用程式都會使用的 BPF helper 定義，<a href="https://www.man7.org/linux/man-pages/man7/bpf-helpers.7.html">這裡</a>有更詳細的說明
 <ul>
-<li><code>SEC()</code> 巨集仿照 C 函數將變數及函數放在指定區域，例如 <code>SEC(&quot;tp/syscalls/sys_enter_write&quot;) int handle_tp(void *ctx) { ... }</code> 定義每次從任何使用者空間應用程式觸發 <code>write()</code> syscall 的時候，就會被呼叫的 tracepoint BPF 程式
+<li><code>bpf_map_&lt;操作&gt;_elem(&amp;some_map, &amp;keyvar[, &amp;valuevar][, args])</code> 是在 kernel 對 map 進行操作的函數，常見的操作有 lookup, update, delete, push, pop, peek 等</li>
+<li><code>SEC()</code> 巨集仿照 C 函數形式將變數及函數放在指定區域，例如 <code>SEC(&quot;tp/syscalls/sys_enter_write&quot;) int handle_tp(void *ctx) { ... }</code> 定義每次從任何使用者空間應用程式觸發 <code>write()</code> syscall 的時候，就會被呼叫的 tracepoint BPF 程式，呼叫的函數名稱為 <code>handle_tp</code>，會回傳一個整數來決定接下來的行動
 <ul>
 <li><code>char LICENSE[] SEC(&quot;license&quot;)</code> 定義你 BPF 程式碼的許可，kernel 要求一定要宣告 <code>GPL</code>, <code>GPL v2</code>, <code>GPL and additional rights</code>, <code>Dual BSD/GPL</code>, <code>Dual MIT/GPL</code>, <code>Dual MPL/GPL</code> 其中一個，這會影響你可以使用的函數</li>
 </ul></li>
-<li><code>bpf_map_&lt;operation&gt;_elem(&amp;some_map, &amp;keyvar[, &amp;valuevar][, args])</code> 是在 kernel 對 map 進行操作的函數，常見的 operation 有 lookup, update, delete, push, pop,peek 等</li>
 </ul></li>
-<li>可以在這裡定義全域變數，它可以被 BPF 程式碼讀取和更新</li>
 </ul></li>
-<li><code>&lt;app&gt;.c</code>: 載入 BPF 程式碼並在應用程式生命週期和其互動的使用者空間 C 程式碼，在宣告全域變數的前方加入 <code>const volatile</code> 代表其在 BPF 程式碼和使用者空間程式碼都是唯讀
+<li><code>&lt;app&gt;.c</code>: 用來載入 BPF 程式碼並在應用程式生命週期和其互動的使用者空間 C 程式碼
 <ul>
+<li>引入 <code>bpf.h</code>，定義各種使用者空間用於操作 BPF 程式和 maps 的 bpf helpers</li>
+<li>引入 <code>libbpf.h</code>，包含 libbpf types 和函數的定義</li>
 <li>引入 <code>&lt;app&gt;.skel.h</code>，對應 BPF C 的高階結構，藉由將編譯好的 BPF 物件程式碼內容貼在標頭檔內來簡化 BPF 程式碼的部署，從 kernel 5.5 版開始，使用者空間程式能透過它讀取和改寫全域變數</li>
 <li><code>libbpf_set_print()</code> 可以客製化 libbpf 日誌輸出，對於程式除錯非常有用</li>
-<li>提升 <code>RLIMIT_MEMLOCK</code> 極限，最簡單的方法是 <code>setrlimit(RLIMIT_MEMLOCK, ...)</code>，提升 kernel 使用者內部記憶體上限，讓 BPF 子系統可以分配必要資源給 BPF 程式、maps 等等，</li>
+<li>提升 <code>RLIMIT_MEMLOCK</code> 極限，最簡單的方法是 <code>setrlimit(RLIMIT_MEMLOCK, ...)</code>，這可以提升 kernel 使用者內部記憶體上限，讓 BPF 子系統可以分配必要資源給 BPF 程式、maps 等等</li>
 </ul></li>
 <li><code>&lt;app&gt;.h</code> (選擇性): 含有應用程式 BPF 程式碼和使用者空間程式碼共同 type 定義的標頭檔</li>
 </ul>
 </div>
-<div id="bpf-co-re-應用程式生命週期" class="section level3" number="1.4.4">
-<h3><span class="header-section-number">1.4.4</span> BPF CO-RE 應用程式生命週期</h3>
-<p>BPF 應用程式通常會經歷以下階段 (BPF skeleton 有對應的函數在使用者空間程式觸發各個階段):</p>
+<div id="bpf-co-re-應用程式生命週期" class="section level3" number="1.3.5">
+<h3><span class="header-section-number">1.3.5</span> BPF CO-RE 應用程式生命週期</h3>
+<p>BPF 應用程式通常會經歷以下階段 (各自於 BPF skeleton 內有定義，在使用者空間程式呼叫以觸發各個階段):</p>
 <ul>
-<li>開啟階段 &lt;-&gt; &lt;name&gt;__open(): 貼上 BPF 物件檔，發現 BPF 程式、BPF maps、和全域變數但還沒有創建，可以在 BPF 應用程式開啟後，在本體被建造和載入之前做調整 (必要時設定 BPF 程式類型，預設全域變數和唯獨變數初始值等等)</li>
-<li>載入階段 &lt;-&gt; &lt;name&gt;__load(): 建立 BPF maps，已處理各種重新定位，將 BPF 程式載入 kernel 和驗證，此時所有 BPF 應用程式的部分都已經驗證並存在於 kernel 中，但還沒有 BPF 程式被執行，在此階段後，可以初始化 BPF maps。如果你不打算在載入之前調整 BPF 程式，你可以用 <code>&lt;name&gt;__open_and_load()</code> 來合併開啟階段和載入階段</li>
-<li>附加階段 &lt;-&gt; &lt;name&gt;__attach(): 將 BPF 程式附加於各種 BPF hook points (如 tracepoints, kprobes, cgroup hooks, network packet processing pipeline 等等)上，這是 BPF 開始執行實用作業和讀取/更新 BPF maps 及 全域變數的階段</li>
-<li>拆除階段 &lt;-&gt; &lt;name&gt;__destroy(): 將 BPF 程式從 kernel 卸載，摧毀 BPF maps 並釋放 BPF 應用程式使用的所有資源</li>
+<li>開啟階段 &lt;-&gt; obj = &lt;name&gt;__open(): 貼上 BPF 物件檔，發現 BPF 程式、BPF maps、和全域變數但還沒有創建，可以在 BPF 應用程式開啟後，在本體被建造和載入之前做調整 (必要時設定 BPF 程式類型，預設全域變數和唯獨變數初始值等等)</li>
+<li>載入階段 &lt;-&gt; err = &lt;name&gt;__load(obj): 建立 BPF maps，處理各種重新定位訊息，將 BPF 程式載入 kernel 和驗證，此時所有 BPF 應用程式的部分都已經驗證並存在於 kernel 中，但還沒有 BPF 程式被執行，在此階段後，可以初始化 BPF maps。如果你不打算在載入之前調整 BPF 程式，你可以用 <code>&lt;name&gt;__open_and_load()</code> 來合併開啟階段和載入階段</li>
+<li>附加階段 &lt;-&gt; err = &lt;name&gt;__attach(obj): 將 BPF 程式附加於各種 BPF hook points (如 tracepoints, kprobes, cgroup hooks, network packet processing pipeline 等等)上，這是 BPF 開始執行實用作業和讀取/更新 BPF maps 及全域變數的階段</li>
+<li>拆除階段 &lt;-&gt; &lt;name&gt;__destroy(obj): 將 BPF 程式從 kernel 卸載，摧毀 BPF maps 並釋放 BPF 應用程式使用的所有資源</li>
 </ul>
 </div>
-<div id="bpf-co-re-編譯步驟" class="section level3" number="1.4.5">
-<h3><span class="header-section-number">1.4.5</span> BPF CO-RE 編譯步驟</h3>
-<p>建造 BPF CO-RE 程式需要以下步驟:</p>
+<div id="bpf-co-re-範例程式碼" class="section level3" number="1.3.6">
+<h3><span class="header-section-number">1.3.6</span> BPF CO-RE 範例程式碼</h3>
+<p>要深入學習 BPF CO-RE 架構，以下範例程式碼可以參考</p>
 <ul>
-<li>製造含有所有 kernel types 的 <code>vmlinux.h</code> 標頭檔</li>
-<li>使用近期的 clang (版本 10 或以上) 將 BPF 原程式碼編譯成 <code>.o</code> 物件檔，如果可以，用 llvm 將多餘的 DWARF 資訊剝掉</li>
-<li>由編譯好的 BPF 物件檔製造 BPF skeleton 標頭檔</li>
-<li>在使用者空間程式碼引用製造的 BPF skeleton 標頭檔來使用</li>
-<li>最後編譯使用者空間程式碼，這樣 BPF 物件程式碼就會附加在裏面，這樣你的應用程式就不用隨附其他檔案</li>
+<li><a href="https://github.com/sartura/ebpf-core-sample">sartura 網頁上的範例</a></li>
+<li><a href="https://github.com/libbpf/libbpf-bootstrap">libbpf-bootstrap 範例</a></li>
+<li><a href="https://github.com/iovisor/bcc/tree/master/libbpf-tools">BCC 的 libbpf-tools 範例</a></li>
 </ul>
 </div>
 </div>
@@ -463,6 +469,7 @@ clang -Wall -O2 -g maps.o libbpf/build/libbpf.a -lelf -lz -o maps</code></pre>
 <li><a href="https://nakryiko.com/posts/bpf-portability-and-co-re/">BPF CO-RE (Compile Once – Run Everywhere)</a></li>
 <li><a href="https://nakryiko.com/posts/bcc-to-libbpf-howto-guide/">BCC to libbpf conversion guide</a></li>
 <li><a href="https://nakryiko.com/posts/libbpf-bootstrap/">Building BPF applications with libbpf-bootstrap</a></li>
+<li><a href="http://vger.kernel.org/bpfconf2019_talks/bpf-core.pdf">BPF CO-RE presentation from LSF/MM2019 conference slide</a></li>
 <li><a href="https://github.com/libbpf/libbpf">Libbpf github page</a></li>
 <li><a href="https://ostechnix.com/upgrade-to-debian-11-bullseye-from-debian-10-buster/">How To Upgrade To Debian 11 Bullseye From Debian 10 Buster</a></li>
 <li><a href="https://www.sartura.hr/blog/simple-ebpf-core-application/">Simple eBPF CO-RE Application</a></li>
