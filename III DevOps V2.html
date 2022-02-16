@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>@font-face {
+  font-family: octicons-link;
+  src: url(data:font/woff;charset=utf-8;base64,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) format('woff');
+}
+
+.markdown-body {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  color: #333;
+  font-family: "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-size: 16px;
+  line-height: 1.6;
+  word-wrap: break-word;
+}
+
+.markdown-body a {
+  background-color: transparent;
+}
+
+.markdown-body a:active,
+.markdown-body a:hover {
+  outline: 0;
+}
+
+.markdown-body strong {
+  font-weight: bold;
+}
+
+.markdown-body h1 {
+  font-size: 2em;
+  margin: 0.67em 0;
+}
+
+.markdown-body img {
+  border: 0;
+}
+
+.markdown-body hr {
+  box-sizing: content-box;
+  height: 0;
+}
+
+.markdown-body pre {
+  overflow: auto;
+}
+
+.markdown-body code,
+.markdown-body kbd,
+.markdown-body pre {
+  font-family: monospace, monospace;
+  font-size: 1em;
+}
+
+.markdown-body input {
+  color: inherit;
+  font: inherit;
+  margin: 0;
+}
+
+.markdown-body html input[disabled] {
+  cursor: default;
+}
+
+.markdown-body input {
+  line-height: normal;
+}
+
+.markdown-body input[type="checkbox"] {
+  box-sizing: border-box;
+  padding: 0;
+}
+
+.markdown-body table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.markdown-body td,
+.markdown-body th {
+  padding: 0;
+}
+
+.markdown-body * {
+  box-sizing: border-box;
+}
+
+.markdown-body input {
+  font: 13px / 1.4 Helvetica, arial, nimbussansl, liberationsans, freesans, clean, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+.markdown-body a {
+  color: #4078c0;
+  text-decoration: none;
+}
+
+.markdown-body a:hover,
+.markdown-body a:active {
+  text-decoration: underline;
+}
+
+.markdown-body hr {
+  height: 0;
+  margin: 15px 0;
+  overflow: hidden;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.markdown-body hr:before {
+  display: table;
+  content: "";
+}
+
+.markdown-body hr:after {
+  display: table;
+  clear: both;
+  content: "";
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4,
+.markdown-body h5,
+.markdown-body h6 {
+  margin-top: 15px;
+  margin-bottom: 15px;
+  line-height: 1.1;
+}
+
+.markdown-body h1 {
+  font-size: 30px;
+}
+
+.markdown-body h2 {
+  font-size: 21px;
+}
+
+.markdown-body h3 {
+  font-size: 16px;
+}
+
+.markdown-body h4 {
+  font-size: 14px;
+}
+
+.markdown-body h5 {
+  font-size: 12px;
+}
+
+.markdown-body h6 {
+  font-size: 11px;
+}
+
+.markdown-body blockquote {
+  margin: 0;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+  padding: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.markdown-body ol ol,
+.markdown-body ul ol {
+  list-style-type: lower-roman;
+}
+
+.markdown-body ul ul ol,
+.markdown-body ul ol ol,
+.markdown-body ol ul ol,
+.markdown-body ol ol ol {
+  list-style-type: lower-alpha;
+}
+
+.markdown-body dd {
+  margin-left: 0;
+}
+
+.markdown-body code {
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font-size: 12px;
+}
+
+.markdown-body pre {
+  margin-top: 0;
+  margin-bottom: 0;
+  font: 12px Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
+
+.markdown-body .select::-ms-expand {
+  opacity: 0;
+}
+
+.markdown-body .octicon {
+  font: normal normal normal 16px/1 octicons-link;
+  display: inline-block;
+  text-decoration: none;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.markdown-body .octicon-link:before {
+  content: '\f05c';
+}
+
+.markdown-body:before {
+  display: table;
+  content: "";
+}
+
+.markdown-body:after {
+  display: table;
+  clear: both;
+  content: "";
+}
+
+.markdown-body>*:first-child {
+  margin-top: 0 !important;
+}
+
+.markdown-body>*:last-child {
+  margin-bottom: 0 !important;
+}
+
+.markdown-body a:not([href]) {
+  color: inherit;
+  text-decoration: none;
+}
+
+.markdown-body .anchor {
+  display: inline-block;
+  padding-right: 2px;
+  margin-left: -18px;
+}
+
+.markdown-body .anchor:focus {
+  outline: none;
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4,
+.markdown-body h5,
+.markdown-body h6 {
+  margin-top: 1em;
+  margin-bottom: 16px;
+  font-weight: bold;
+  line-height: 1.4;
+}
+
+.markdown-body h1 .octicon-link,
+.markdown-body h2 .octicon-link,
+.markdown-body h3 .octicon-link,
+.markdown-body h4 .octicon-link,
+.markdown-body h5 .octicon-link,
+.markdown-body h6 .octicon-link {
+  color: #000;
+  vertical-align: middle;
+  visibility: hidden;
+}
+
+.markdown-body h1:hover .anchor,
+.markdown-body h2:hover .anchor,
+.markdown-body h3:hover .anchor,
+.markdown-body h4:hover .anchor,
+.markdown-body h5:hover .anchor,
+.markdown-body h6:hover .anchor {
+  text-decoration: none;
+}
+
+.markdown-body h1:hover .anchor .octicon-link,
+.markdown-body h2:hover .anchor .octicon-link,
+.markdown-body h3:hover .anchor .octicon-link,
+.markdown-body h4:hover .anchor .octicon-link,
+.markdown-body h5:hover .anchor .octicon-link,
+.markdown-body h6:hover .anchor .octicon-link {
+  visibility: visible;
+}
+
+.markdown-body h1 {
+  padding-bottom: 0.3em;
+  font-size: 2.25em;
+  line-height: 1.2;
+  border-bottom: 1px solid #eee;
+}
+
+.markdown-body h1 .anchor {
+  line-height: 1;
+}
+
+.markdown-body h2 {
+  padding-bottom: 0.3em;
+  font-size: 1.75em;
+  line-height: 1.225;
+  border-bottom: 1px solid #eee;
+}
+
+.markdown-body h2 .anchor {
+  line-height: 1;
+}
+
+.markdown-body h3 {
+  font-size: 1.5em;
+  line-height: 1.43;
+}
+
+.markdown-body h3 .anchor {
+  line-height: 1.2;
+}
+
+.markdown-body h4 {
+  font-size: 1.25em;
+}
+
+.markdown-body h4 .anchor {
+  line-height: 1.2;
+}
+
+.markdown-body h5 {
+  font-size: 1em;
+}
+
+.markdown-body h5 .anchor {
+  line-height: 1.1;
+}
+
+.markdown-body h6 {
+  font-size: 1em;
+  color: #777;
+}
+
+.markdown-body h6 .anchor {
+  line-height: 1.1;
+}
+
+.markdown-body p,
+.markdown-body blockquote,
+.markdown-body ul,
+.markdown-body ol,
+.markdown-body dl,
+.markdown-body table,
+.markdown-body pre {
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+.markdown-body hr {
+  height: 4px;
+  padding: 0;
+  margin: 16px 0;
+  background-color: #e7e7e7;
+  border: 0 none;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+  padding-left: 2em;
+}
+
+.markdown-body ul ul,
+.markdown-body ul ol,
+.markdown-body ol ol,
+.markdown-body ol ul {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.markdown-body li>p {
+  margin-top: 16px;
+}
+
+.markdown-body dl {
+  padding: 0;
+}
+
+.markdown-body dl dt {
+  padding: 0;
+  margin-top: 16px;
+  font-size: 1em;
+  font-style: italic;
+  font-weight: bold;
+}
+
+.markdown-body dl dd {
+  padding: 0 16px;
+  margin-bottom: 16px;
+}
+
+.markdown-body blockquote {
+  padding: 0 15px;
+  color: #777;
+  border-left: 4px solid #ddd;
+}
+
+.markdown-body blockquote>:first-child {
+  margin-top: 0;
+}
+
+.markdown-body blockquote>:last-child {
+  margin-bottom: 0;
+}
+
+.markdown-body table {
+  display: block;
+  width: 100%;
+  overflow: auto;
+  word-break: normal;
+  word-break: keep-all;
+}
+
+.markdown-body table th {
+  font-weight: bold;
+}
+
+.markdown-body table th,
+.markdown-body table td {
+  padding: 6px 13px;
+  border: 1px solid #ddd;
+}
+
+.markdown-body table tr {
+  background-color: #fff;
+  border-top: 1px solid #ccc;
+}
+
+.markdown-body table tr:nth-child(2n) {
+  background-color: #f8f8f8;
+}
+
+.markdown-body img {
+  max-width: 100%;
+  box-sizing: content-box;
+  background-color: #fff;
+}
+
+.markdown-body code {
+  padding: 0;
+  padding-top: 0.2em;
+  padding-bottom: 0.2em;
+  margin: 0;
+  font-size: 85%;
+  background-color: rgba(0,0,0,0.04);
+  border-radius: 3px;
+}
+
+.markdown-body code:before,
+.markdown-body code:after {
+  letter-spacing: -0.2em;
+  content: "\00a0";
+}
+
+.markdown-body pre>code {
+  padding: 0;
+  margin: 0;
+  font-size: 100%;
+  word-break: normal;
+  white-space: pre;
+  background: transparent;
+  border: 0;
+}
+
+.markdown-body .highlight {
+  margin-bottom: 16px;
+}
+
+.markdown-body .highlight pre,
+.markdown-body pre {
+  padding: 16px;
+  overflow: auto;
+  font-size: 85%;
+  line-height: 1.45;
+  background-color: #f7f7f7;
+  border-radius: 3px;
+}
+
+.markdown-body .highlight pre {
+  margin-bottom: 0;
+  word-break: normal;
+}
+
+.markdown-body pre {
+  word-wrap: normal;
+}
+
+.markdown-body pre code {
+  display: inline;
+  max-width: initial;
+  padding: 0;
+  margin: 0;
+  overflow: initial;
+  line-height: inherit;
+  word-wrap: normal;
+  background-color: transparent;
+  border: 0;
+}
+
+.markdown-body pre code:before,
+.markdown-body pre code:after {
+  content: normal;
+}
+
+.markdown-body kbd {
+  display: inline-block;
+  padding: 3px 5px;
+  font-size: 11px;
+  line-height: 10px;
+  color: #555;
+  vertical-align: middle;
+  background-color: #fcfcfc;
+  border: solid 1px #ccc;
+  border-bottom-color: #bbb;
+  border-radius: 3px;
+  box-shadow: inset 0 -1px 0 #bbb;
+}
+
+.markdown-body .pl-c {
+  color: #969896;
+}
+
+.markdown-body .pl-c1,
+.markdown-body .pl-s .pl-v {
+  color: #0086b3;
+}
+
+.markdown-body .pl-e,
+.markdown-body .pl-en {
+  color: #795da3;
+}
+
+.markdown-body .pl-s .pl-s1,
+.markdown-body .pl-smi {
+  color: #333;
+}
+
+.markdown-body .pl-ent {
+  color: #63a35c;
+}
+
+.markdown-body .pl-k {
+  color: #a71d5d;
+}
+
+.markdown-body .pl-pds,
+.markdown-body .pl-s,
+.markdown-body .pl-s .pl-pse .pl-s1,
+.markdown-body .pl-sr,
+.markdown-body .pl-sr .pl-cce,
+.markdown-body .pl-sr .pl-sra,
+.markdown-body .pl-sr .pl-sre {
+  color: #183691;
+}
+
+.markdown-body .pl-v {
+  color: #ed6a43;
+}
+
+.markdown-body .pl-id {
+  color: #b52a1d;
+}
+
+.markdown-body .pl-ii {
+  background-color: #b52a1d;
+  color: #f8f8f8;
+}
+
+.markdown-body .pl-sr .pl-cce {
+  color: #63a35c;
+  font-weight: bold;
+}
+
+.markdown-body .pl-ml {
+  color: #693a17;
+}
+
+.markdown-body .pl-mh,
+.markdown-body .pl-mh .pl-en,
+.markdown-body .pl-ms {
+  color: #1d3e81;
+  font-weight: bold;
+}
+
+.markdown-body .pl-mq {
+  color: #008080;
+}
+
+.markdown-body .pl-mi {
+  color: #333;
+  font-style: italic;
+}
+
+.markdown-body .pl-mb {
+  color: #333;
+  font-weight: bold;
+}
+
+.markdown-body .pl-md {
+  background-color: #ffecec;
+  color: #bd2c00;
+}
+
+.markdown-body .pl-mi1 {
+  background-color: #eaffea;
+  color: #55a532;
+}
+
+.markdown-body .pl-mdr {
+  color: #795da3;
+  font-weight: bold;
+}
+
+.markdown-body .pl-mo {
+  color: #1d3e81;
+}
+
+.markdown-body kbd {
+  display: inline-block;
+  padding: 3px 5px;
+  font: 11px Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  line-height: 10px;
+  color: #555;
+  vertical-align: middle;
+  background-color: #fcfcfc;
+  border: solid 1px #ccc;
+  border-bottom-color: #bbb;
+  border-radius: 3px;
+  box-shadow: inset 0 -1px 0 #bbb;
+}
+
+.markdown-body .task-list-item {
+  list-style-type: none;
+}
+
+.markdown-body .task-list-item+.task-list-item {
+  margin-top: 3px;
+}
+
+.markdown-body .task-list-item input {
+  margin: 0 0.35em 0.25em -1.6em;
+  vertical-align: middle;
+}
+
+.markdown-body :checked+.radio-label {
+  z-index: 1;
+  position: relative;
+  border-color: #4078c0;
+}
+</style><style>/*
+
+github.com style (c) Vasily Polovnyov <vast@whiteants.net>
+
+*/
+
+.hljs {
+  display: block;
+  overflow-x: auto;
+  padding: 0.5em;
+  color: #333;
+  background: #f8f8f8;
+}
+
+.hljs-comment,
+.hljs-quote {
+  color: #998;
+  font-style: italic;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-subst {
+  color: #333;
+  font-weight: bold;
+}
+
+.hljs-number,
+.hljs-literal,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag .hljs-attr {
+  color: #008080;
+}
+
+.hljs-string,
+.hljs-doctag {
+  color: #d14;
+}
+
+.hljs-title,
+.hljs-section,
+.hljs-selector-id {
+  color: #900;
+  font-weight: bold;
+}
+
+.hljs-subst {
+  font-weight: normal;
+}
+
+.hljs-type,
+.hljs-class .hljs-title {
+  color: #458;
+  font-weight: bold;
+}
+
+.hljs-tag,
+.hljs-name,
+.hljs-attribute {
+  color: #000080;
+  font-weight: normal;
+}
+
+.hljs-regexp,
+.hljs-link {
+  color: #009926;
+}
+
+.hljs-symbol,
+.hljs-bullet {
+  color: #990073;
+}
+
+.hljs-built_in,
+.hljs-builtin-name {
+  color: #0086b3;
+}
+
+.hljs-meta {
+  color: #999;
+  font-weight: bold;
+}
+
+.hljs-deletion {
+  background: #fdd;
+}
+
+.hljs-addition {
+  background: #dfd;
+}
+
+.hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-strong {
+  font-weight: bold;
+}
+</style><style>.markdown-body {
+    font-size: 11px;
+}
+
+img.emoji-img.emoji {
+  max-width: 11px;
+  max-height: 11px;
+  vertical-align: middle;
+}
+</style><style>/*
+ * Your Stylesheet
+ *
+ * This stylesheet is loaded when Atom starts up and is reloaded automatically
+ * when it is changed and saved.
+ *
+ * Add your own CSS or Less to fully customize Atom.
+ * If you are unfamiliar with Less, you can read more about it here:
+ * http://lesscss.org
+ */
+/*
+ * Examples
+ * (To see them, uncomment and save)
+ */
+</style>
+
+        <!--<script src=""></script>-->
+    </head>
+    <body class="markdown-body">
+        <h1 id="deploy-devops-v2">deploy-devops V2</h1>
+<h2 id="&#x5B89;&#x88DD;&#x74B0;&#x5883;&#x9700;&#x6C42;">&#x5B89;&#x88DD;&#x74B0;&#x5883;&#x9700;&#x6C42;</h2>
+<ul>
+<li><p>III DevOps &#x7CFB;&#x7D71;&#x9700;&#x5B89;&#x88DD;&#x5728; Ubuntu 20.04 LTS &#x4F5C;&#x696D;&#x7CFB;&#x7D71;, &#x53EF;&#x63A1;&#x7528;&#x865B;&#x64EC;&#x6A5F; virtual machine(VM) &#x6216;&#x5BE6;&#x9AD4;&#x6A5F;&#x4F86;&#x9032;&#x884C;&#x90E8;&#x7F72;, &#x63A1;&#x7528;&#x865B;&#x64EC;&#x6A5F;&#x7CFB;&#x7D71;&#x53EF;&#x4EE5;&#x4F9D;&#x7167;&#x4E4B;&#x5F8C;&#x4F7F;&#x7528;&#x72C0;&#x6CC1;&#x9032;&#x884C;&#x5FEB;&#x901F;&#x64F4;&#x5145;</p></li>
+<li><p>&#x5B89;&#x88DD;&#x7684;&#x4E3B;&#x6A5F;&#x6700;&#x5C0F;&#x898F;&#x683C;&#x70BA; 1 &#x53F0; 8 vCore, 16G RAM, 120G SSD , &#x6B63;&#x5F0F;&#x4F7F;&#x7528;&#x7684;&#x958B;&#x767C;&#x74B0;&#x5883;&#x9700;&#x8981;&#x64F4;&#x5145;&#x81F3; 3 &#x53F0;&#x4EE5;&#x4E0A;&#x7684;&#x4E3B;&#x6A5F;, &#x4E14;&#x5EFA;&#x8B70;&#x90FD;&#x4F7F;&#x7528; SSD &#x786C;&#x789F;&#x78BA;&#x4FDD;&#x6A94;&#x6848;&#x5B58;&#x53D6;&#x901F;&#x5EA6;&#x65BC;&#x57F7;&#x884C;&#x6548;&#x80FD;</p></li>
+<li><p>&#x5728;&#x958B;&#x59CB;&#x5B89;&#x88DD;&#x4E4B;&#x524D;, &#x60A8;&#x61C9;&#x8A72;&#x8981;&#x5148;&#x78BA;&#x8A8D;&#x4E00;&#x4E0B;&#x7684;&#x5B89;&#x88DD;&#x8A2D;&#x5B9A;&#x8CC7;&#x8A0A;</p>
+<ul>
+<li>&#x4E3B;&#x6A5F;&#x7684;&#x7DB2;&#x8DEF;&#x8207; IP &#x8CC7;&#x8A0A;</li>
+<li>&#x5B89;&#x88DD;&#x90E8;&#x7F72;&#x7684;&#x6A21;&#x5F0F; IP &#x6216; DNS</li>
+<li>IP &#x6A21;&#x5F0F; : &#x76F4;&#x63A5;&#x900F;&#x904E; IP &#x5B58;&#x53D6; III DevOps &#x8207;&#x76F8;&#x95DC;&#x670D;&#x52D9;, &#x4E0D;&#x540C;&#x670D;&#x52D9;&#x6703;&#x4F7F;&#x7528;&#x4E0D;&#x540C;&#x9023;&#x63A5;&#x57E0; Exp. GitLab &#x4F7F;&#x7528; Port:32080, Redmine &#x4F7F;&#x7528; Port:32748..</li>
+<li>DNS &#x6A21;&#x5F0F;: &#x63D0;&#x4F9B; Domain names &#x5C0D;&#x61C9;&#x5230; III DevOps &#x8207;&#x76F8;&#x95DC;&#x670D;&#x52D9;  Exp. GitLab &#x4F7F;&#x7528; gitlab.iiidevops.org, Redmine &#x4F7F;&#x7528; redmine.iiidevops.org..</li>
+<li>GitLab &#x7684; root &#x5BC6;&#x78BC;</li>
+<li>Harbor, Rancher, Redmine, Sonarqube &#x7684; admin &#x5BC6;&#x78BC; (&#x53EF;&#x4EE5;&#x90FD;&#x548C; GitLab &#x7684; root &#x5BC6;&#x78BC;&#x76F8;&#x540C;)</li>
+<li>III Devops &#x7B2C;&#x4E00;&#x4F4D;&#x4F7F;&#x7528;&#x8005; ( III DevOps &#x7684;&#x7CFB;&#x7D71;&#x7BA1;&#x7406;&#x8005;)</li>
+<li>&#x5E33;&#x865F; (&#x4E0D;&#x5141;&#x8A31; &apos;admin&apos; &#x8207; &apos;root&apos;)</li>
+<li>E-Mail</li>
+<li>&#x5BC6;&#x78BC; (&#x53EF;&#x4EE5;&#x548C; GitLab &#x7684; root &#x5BC6;&#x78BC;&#x76F8;&#x540C;)</li>
+<li>&#x4E00;&#x500B; Github &#x7684; access token (scopes &#x53EA;&#x9700;&#x8981; public_repo &#x5373;&#x53EF;, &#x8ACB;&#x53C3;&#x8003; <a href="https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token">https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token</a> )</li></ul></li>
+<li><p>&#x7CFB;&#x7D71;&#x5B89;&#x88DD;&#x4E4B;&#x5F8C;&#x53EF;&#x4EE5;&#x4F9D;&#x64DA;&#x5BE6;&#x969B;&#x5EFA;&#x7ACB;&#x5C08;&#x6848;&#x7684;&#x4F7F;&#x7528;&#x9700;&#x8981;, &#x9032;&#x884C;&#x7BC0;&#x9EDE;&#x6A6B;&#x5411;&#x64F4;&#x5145; (VM2, VM3, VM4, VM5&#x2026;) &#x4E5F;&#x53EF;&#x80FD;&#x9700;&#x8981;&#x91DD;&#x5C0D; VM1 &#x64F4;&#x589E;&#x786C;&#x789F;&#x5927;&#x5C0F;</p></li>
+<li><p>&#x5982;&#x679C;&#x5B89;&#x88DD;&#x74B0;&#x5883;&#x5916;&#x90E8;&#x6709;&#x9632;&#x706B;&#x7246;, &#x8ACB;&#x589E;&#x52A0;&#x9632;&#x706B;&#x7246;&#x898F;&#x5247;&#x8B93;&#x4F7F;&#x7528;&#x8005;&#x7684;&#x4F86;&#x6E90; IP &#x80FD;&#x5141;&#x8A31;&#x5B58;&#x53D6; III DevOps &#x4E3B;&#x6A5F;&#x8207;&#x6240;&#x6709;&#x7BC0;&#x9EDE; IP (VM2, VM3, VM4, VM5&#x2026;) &#x7684; TCP port 80/443/30000~32767 </p></li>
+</ul>
+<h1 id="step-1-&#x4E0B;&#x8F09;&#x90E8;&#x7F72;&#x7A0B;&#x5F0F;&#x8207;&#x5B89;&#x88DD;-docker-&#x7B49;&#x7CFB;&#x7D71;&#x5957;&#x4EF6;">Step 1. &#x4E0B;&#x8F09;&#x90E8;&#x7F72;&#x7A0B;&#x5F0F;&#x8207;&#x5B89;&#x88DD; docker &#x7B49;&#x7CFB;&#x7D71;&#x5957;&#x4EF6;</h1>
+<blockquote>
+  <ul>
+  <li>&#x9700;&#x8981;&#x4F7F;&#x7528; <strong>rekuser</strong> &#x4F86;&#x9032;&#x884C;&#x6574;&#x9AD4;&#x5B89;&#x88DD;&#x7A0B;&#x5E8F; </li>
+  </ul>
+  <blockquote>
+<pre><code class="hljs bash language-bash">sudo useradd -s /bin/bash -d /home/rkeuser/ -m -G sudo rkeuser
+sudo passwd rkeuser
+su - rkeuser
+
+wget -O iiidevops_install.pl https://raw.githubusercontent.com/iii-org/deploy-devops/master/bin/iiidevops_install.pl;
+perl ./iiidevops_install.pl</code></pre>
+  </blockquote>
+  <ul>
+  <li>&#x5982;&#x679C;&#x4E00;&#x5207;&#x5B89;&#x88DD;&#x9806;&#x5229;, &#x4F60;&#x61C9;&#x8A72;&#x53EF;&#x4EE5;&#x770B;&#x5230;&#x5982;&#x540C;&#x4EE5;&#x4E0B;&#x5C0D;&#x5404;&#x9805;&#x6AA2;&#x67E5;&#x90FD; OK &#x7684;&#x8A0A;&#x606F;</li>
+  </ul>
+<pre><code class="hljs">rkeuser@iiidevops-71:~$ perl <span class="hljs-string">./iiidevops_install.pl</span>
+:
+:
+<span class="hljs-params">-----Validation</span> results<span class="hljs-params">-----</span>
+Install docker 19.03.14 <span class="hljs-string">..OK</span>!
+Install kubectl v1.18 <span class="hljs-string">..OK</span>!
+Install helm <span class="hljs-string">..OK</span>!
+Install rke v1.2.7 <span class="hljs-string">..OK</span>!</code></pre>
+</blockquote>
+<h1 id="step-2-&#x7522;&#x751F;-iii-devops-&#x5B89;&#x88DD;&#x74B0;&#x5883;&#x8A2D;&#x5B9A;&#x6A94;-envpl">Step 2. &#x7522;&#x751F; III DevOps &#x5B89;&#x88DD;&#x74B0;&#x5883;&#x8A2D;&#x5B9A;&#x6A94; &quot;env.pl&quot;</h1>
+<blockquote>
+<pre><code class="hljs bash language-bash">~/deploy-devops/bin/generate_env.pl</code></pre>
+  <p>`</p>
+  <ul>
+  <li><p>&#x5728;&#x5404;&#x9805;&#x554F;&#x984C;&#x90FD;&#x8F38;&#x5165;&#x5F8C;, &#x8ACB;&#x6AA2;&#x67E5;&#x8F38;&#x5165;&#x7684;&#x9805;&#x76EE;&#x662F;&#x5426;&#x90FD;&#x6B63;&#x78BA;&#x7121;&#x8AA4;. &#x4F60;&#x4E5F;&#x53EF;&#x4EE5;&#x76F4;&#x63A5;&#x7DE8;&#x8F2F;&#x9019;&#x500B;&#x74B0;&#x5883;&#x8A2D;&#x5B9A;&#x6A94; env.pl &#x4F86;&#x9032;&#x884C;&#x74B0;&#x5883;&#x8A2D;&#x5B9A;&#x8CC7;&#x6599;&#x7684;&#x4FEE;&#x6B63;</p>
+  <p><code>vi ~/deploy-devops/env.pl</code></p></li>
+  </ul>
+</blockquote>
+<h1 id="step-3-&#x90E8;&#x7F72;-nfsrancherredmineharborgitlab&#x8207;sonarqube">Step 3. &#x90E8;&#x7F72; NFS,Rancher,Redmine,Harbor,GitLab&#x8207;Sonarqube</h1>
+<blockquote>
+  <p><code>~/deploy-devops/bin/iiidevops_install_base.pl</code></p>
+  <p>&#x5B89;&#x88DD;&#x958B;&#x59CB;, &#x6703;&#x63D0;&#x793A; ssh &#x767B;&#x5165;&#x672C;&#x6A5F;&#x9A57;&#x8B49;&#x8207;&#x8F38;&#x5165; rkeuser &#x5BC6;&#x78BC;, &#x4E4B;&#x5F8C;&#x7D04; 15-20 &#x5206;&#x9418;&#x81EA;&#x52D5;&#x5B8C;&#x6210;&#x6240;&#x6709;&#x670D;&#x52D9;&#x5957;&#x4EF6;&#x7684;&#x90E8;&#x7F72;, &#x4F60;&#x61C9;&#x8A72;&#x53EF;&#x4EE5;&#x770B;&#x5230;&#x5982;&#x540C;&#x4EE5;&#x4E0B;&#x7684; URL &#x8CC7;&#x8A0A;.</p>
+<pre><code class="hljs">rkeuser@iiidevops-<span class="hljs-number">71</span>:~$ ~<span class="hljs-regexp">/deploy-devops/</span>bin/iiidevops_install_base.pl
+:
+:
+The deployment of these services has been completed. The service URLs are:
+Rancher - https:<span class="hljs-regexp">//</span><span class="hljs-number">10.20</span>.<span class="hljs-number">0.71</span>:<span class="hljs-number">31443</span>/
+GitLab - http:<span class="hljs-regexp">//</span><span class="hljs-number">10.20</span>.<span class="hljs-number">0.71</span>:<span class="hljs-number">32080</span>/
+Redmine - http:<span class="hljs-regexp">//</span><span class="hljs-number">10.20</span>.<span class="hljs-number">0.71</span>:<span class="hljs-number">32748</span>/
+Harbor - https:<span class="hljs-regexp">//</span><span class="hljs-number">10.20</span>.<span class="hljs-number">0.71</span>:<span class="hljs-number">32443</span>/
+Sonarqube - http:<span class="hljs-regexp">//</span><span class="hljs-number">10.20</span>.<span class="hljs-number">0.71</span>:<span class="hljs-number">31910</span>/</code></pre>
+</blockquote>
+<h1 id="step-4-&#x900F;&#x904E;-rancher-&#x7684;&#x7BA1;&#x7406;&#x7DB2;&#x9801;&#x9032;&#x884C;&#x8A2D;&#x5B9A;">Step 4. &#x900F;&#x904E; Rancher &#x7684;&#x7BA1;&#x7406;&#x7DB2;&#x9801;&#x9032;&#x884C;&#x8A2D;&#x5B9A;</h1>
+<blockquote>
+  <ul>
+  <li><p>Rancher - <a href="https://10.20.0.71:31443/">https://10.20.0.71:31443/</a></p></li>
+  <li><p><strong>&#x8ACB;&#x4F7F;&#x7528; Step 2.(~/deploy-devops/env.pl) &#x5167;&#x6240;&#x8A2D;&#x5B9A;&#x7684; $rancher_admin_password &#x4F86;&#x8F38;&#x5165;&#x8A2D;&#x5B9A; Rancher &#x7684; admin password</strong><br>
+  <img src="https://github.com/iii-org/deploy-devops/blob/master/png/set-racnher-admin-password.png?raw=true" alt="alt text">     </p></li>
+  <li><p>&#x63A5;&#x8457;&#x8A2D;&#x5B9A; <strong>Rancher Server URL</strong>  (&#x4E00;&#x822C;&#x800C;&#x8A00;&#x6703;&#x986F;&#x793A;&#x51FA;&#x6B63;&#x78BA; URL, &#x78BA;&#x8A8D;&#x5373;&#x53EF;)</p></li>
+  <li><p>&#x7B49; Cluster - <strong>local</strong> &#x5B8C;&#x6210;&#x532F;&#x5165;, &#x5C07; <strong>local</strong> &#x6539;&#x6210; <strong>iiidevops-k8s</strong><br>
+  <img src="https://github.com/iii-org/deploy-devops/blob/develop/png/rancher_cluster_name_01.png?raw=true" alt="alt text">     <br>
+  <img src="https://github.com/iii-org/deploy-devops/blob/develop/png/rancher_cluster_name_02.png?raw=true" alt="alt text">     </p></li>
+  </ul>
+</blockquote>
+<h1 id="step-5-&#x900F;&#x904E;-gitlab-&#x7684;&#x7BA1;&#x7406;&#x7DB2;&#x9801;&#x9032;&#x884C;&#x8A2D;&#x5B9A;">Step 5. &#x900F;&#x904E; GitLab &#x7684;&#x7BA1;&#x7406;&#x7DB2;&#x9801;&#x9032;&#x884C;&#x8A2D;&#x5B9A;</h1>
+<blockquote>
+  <ul>
+  <li>GitLab - <a href="http://10.20.0.71:32080/">http://10.20.0.71:32080/</a></li>
+  <li><strong>&#x4F7F;&#x7528; root &#x548C; step 2.(~/deploy-devops/env.pl) &#x6240;&#x8A2D;&#x5B9A;&#x7684;&#x5BC6;&#x78BC;&#x9032;&#x884C;&#x767B;&#x5165;</strong></li>
+  </ul>
+</blockquote>
+<h2 id="&#x7522;&#x751F;-root-personal-access-tokens">&#x7522;&#x751F; <strong>root personal access tokens</strong></h2>
+<blockquote>
+  <ul>
+  <li><p>&#x81F3; User/Administrator/User seetings, &#x7522;&#x751F; root personal access tokens &#x4E26;&#x5C07;&#x9019;&#x500B; token &#x8907;&#x88FD;&#x51FA;&#x4F86;.<br>
+  <img src="https://github.com/iii-org/deploy-devops/blob/master/png/root-settings.png?raw=true" alt="alt text">  </p></li>
+  <li><p>Access Tokens / Name : &#x8F38;&#x5165; <strong>root-pat</strong> / Scopes : &#x9078;&#x53D6;&#x5168;&#x90E8; / Create personal access token<br>
+  <img src="https://github.com/iii-org/deploy-devops/blob/master/png/generate-root-persional-access-token.png?raw=true" alt="alt text"></p></li>
+  <li><p>&#x8907;&#x88FD;&#x9019;&#x500B;&#x65B0;&#x7522;&#x751F;&#x7684; Personal Access Token <br>
+  <img src="https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-rootpat.png?raw=true" alt="alt text">  </p></li>
+  <li><p>&#x8A2D;&#x5B9A; env.pl &#x5167;&#x7684; <strong>$gitlab_private_token</strong> </p>
+  <p><code>~/deploy-devops/bin/generate_env.pl gitlab_private_token [Personal Access Token]</code></p>
+  <p>&#x57F7;&#x884C;&#x5F8C;, &#x4F60;&#x61C9;&#x8A72;&#x53EF;&#x4EE5;&#x770B;&#x5230;&#x5982;&#x540C;&#x4EE5;&#x4E0B;&#x7684;&#x8A0A;&#x606F;.</p></li>
+  </ul>
+<pre><code class="hljs bash language-bash">  rkeuser@iiidevops-71:~$ ~/deploy-devops/bin/generate_env.pl gitlab_private_token 535wZnCJDTL5y22xYYzv
+  A4. Set GitLab Token OK!
+
+  Q21. Do you want to generate env.pl based on the above information?(Y/n)
+  The original env.pl has been backed up as /home/rkeuser/deploy-devops/bin/../env.pl.bak
+  -----
+  11c11
+  &lt; <span class="hljs-variable">$gitlab_private_token</span> = <span class="hljs-string">&apos;535wZnCJDTL5y22xYYzv&apos;</span>; <span class="hljs-comment"># Get from GitLab Web</span>
+  ---
+  &gt; <span class="hljs-variable">$gitlab_private_token</span> = <span class="hljs-string">&apos;skip&apos;</span>; <span class="hljs-comment"># Get from GitLab Web</span>
+  -----</code></pre>
+</blockquote>
+<h1 id="step-6-&#x8A2D;&#x5B9A;-rancher-&#x7684;-pipeline-&#x8207;-gitlab-&#x9032;&#x884C;&#x9023;&#x52D5;">Step 6. &#x8A2D;&#x5B9A; Rancher &#x7684; pipeline &#x8207; Gitlab &#x9032;&#x884C;&#x9023;&#x52D5;</h1>
+<h2 id="&#x56DE;&#x5230;-rancher-&#x7BA1;&#x7406;&#x7DB2;&#x9801;-1">&#x56DE;&#x5230; Rancher &#x7BA1;&#x7406;&#x7DB2;&#x9801;</h2>
+<blockquote>
+  <ul>
+  <li>&#x9EDE;&#x9078; Global/ Cluster(<strong>iiidevops-k8s</strong>)/ Project(Default)<br>
+  <img src="https://github.com/iii-org/deploy-devops/blob/master/png/rancher-choose-cluster-project.png?raw=true" alt="alt text">  </li>
+  <li>&#x9EDE;&#x9078; Tools/Pipline, &#x9078;&#x64C7; <strong>Gitlab</strong><br>
+  <img src="https://github.com/iii-org/deploy-devops/blob/master/png/rancher-setting-hook.png?raw=true" alt="alt text">  </li>
+  <li>&#x8907;&#x88FD; &quot;Redirect URI&quot;</li>
+  </ul>
+</blockquote>
+<h2 id="&#x56DE;&#x5230;-gitlab-&#x7BA1;&#x7406;&#x7DB2;&#x9801;">&#x56DE;&#x5230; GitLab &#x7BA1;&#x7406;&#x7DB2;&#x9801;</h2>
+<blockquote>
+  <p>&#x9EDE;&#x9078; root account/ settings/ Applications<br>
+  <img src="https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-root-setting.png?raw=true" alt="alt text">  <br>
+  <img src="https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-usersetting-application.png?raw=true" alt="alt text">  <br>
+  &#x8A2D;&#x5B9A; Applications<br>
+  Name: &#x8F38;&#x5165; <strong>iiidevops-k8s</strong>, Redirect URI: [&#x8CBC;&#x4E0A;&#x525B;&#x525B;&#x5728; Rancher &#x4E0A;&#x8907;&#x88FD;&#x7684;&#x503C;] &#x4E26;&#x4E14;&#x52FE;&#x9078;&#x6240;&#x6709;&#x7684;&#x9805;&#x76EE;, &#x7136;&#x5F8C;&#x5132;&#x5B58;&#x9019;&#x500B; application.<br>
+  <img src="https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-setting-application.png?raw=true" alt="alt text">  <br>
+  <img src="https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-application-info.png?raw=true" alt="alt text">  <br>
+  &#x53D6;&#x5F97;&#x9019;&#x500B; &quot;Application ID&quot; &#x548C; &quot;Secret&quot;</p>
+  <h2 id="&#x56DE;&#x5230;-rancher-&#x7BA1;&#x7406;&#x7DB2;&#x9801;">&#x56DE;&#x5230; Rancher &#x7BA1;&#x7406;&#x7DB2;&#x9801;</h2>
+  <p>&#x9EDE;&#x9078; rancher pipeline, &#x8CBC;&#x4E0A; application id &#x548C; secret, &#x7136;&#x5F8C;&#x8F38;&#x5165; gitlab url. &#x4F8B;&#x5982; <strong>10.20.0.71:32080</strong><br>
+  <img src="https://github.com/iii-org/deploy-devops/blob/master/png/rancher-setting-applicationsecret.png?raw=true" alt="alt text">  <br>
+  &#x9EDE;&#x9078;&#x9032;&#x884C;&#x6388;&#x6B0A;<br>
+  <img src="https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-authorize.png?raw=true" alt="alt text">  <br>
+  &#x9EDE;&#x9078; Done &#x5B8C;&#x6210;&#x8A2D;&#x5B9A;<br>
+  <img src="https://github.com/iii-org/deploy-devops/blob/master/png/rancher-hook-down.png?raw=true" alt="alt text">    </p>
+</blockquote>
+<h1 id="step-7-&#x90E8;&#x7F72;-iii-devops-&#x7CFB;&#x7D71;">Step 7. &#x90E8;&#x7F72; III DevOps &#x7CFB;&#x7D71;</h1>
+<blockquote>
+  <p><code>~/deploy-devops/bin/iiidevops_install_core.pl</code></p>
+  <p>&#x4F60;&#x53EF;&#x80FD;&#x9700;&#x8981;&#x7B49; 3 &#x5230; 5 &#x5206;&#x9418;&#x4F86;&#x5B8C;&#x6210;&#x90E8;&#x7F72;&#x8207;&#x4E00;&#x4E9B;&#x7CFB;&#x7D71;&#x521D;&#x59CB;&#x503C;&#x7684;&#x5EFA;&#x7ACB;. &#x7136;&#x5F8C;&#x4F60;&#x61C9;&#x8A72;&#x53EF;&#x4EE5;&#x770B;&#x5230;&#x5982;&#x540C;&#x4EE5;&#x4E0B;&#x7684; URL &#x8A0A;&#x606F;.</p>
+<pre><code class="hljs">:
+:
+The deployment <span class="hljs-keyword">of</span> III-DevOps services has been completed. Please <span class="hljs-keyword">try</span> <span class="hljs-built_in">to</span> connect <span class="hljs-built_in">to</span> <span class="hljs-keyword">the</span> following <span class="hljs-built_in">URL</span>.
+III-DevOps - <span class="hljs-keyword">http</span>://<span class="hljs-number">10.20</span><span class="hljs-number">.0</span><span class="hljs-number">.71</span>:<span class="hljs-number">30775</span></code></pre>
+</blockquote>
+<h2 id="&#x900F;&#x904E;&#x7DB2;&#x9801;&#x9032;&#x884C;&#x767B;&#x5165;">&#x900F;&#x904E;&#x7DB2;&#x9801;&#x9032;&#x884C;&#x767B;&#x5165;</h2>
+<blockquote>
+  <ul>
+  <li>III DevOps URL -  <a href="http://10.20.0.71:30775/">http://10.20.0.71:30775/</a><br>
+  <img src="https://github.com/iii-org/deploy-devops/blob/master/png/devops-ui.png?raw=true" alt="alt text">  </li>
+  </ul>
+  <p>&#x4F7F;&#x7528; Step 2.(~/deploy-devops/env.pl) &#x6240;&#x8A2D;&#x5B9A;&#x7684; <strong>$admin_init_login</strong> &#x7BA1;&#x7406;&#x8005;&#x5E33;&#x865F;&#x8207; <strong>$admin_init_password</strong> &#x5BC6;&#x78BC;&#x9032;&#x884C;&#x7CFB;&#x7D71;&#x767B;&#x5165;</p>
+</blockquote>
+<h1 id="step-8-&#x8A2D;&#x5B9A;&#x81EA;&#x52D5;&#x66F4;&#x65B0;&#x5C08;&#x6848;&#x7BC4;&#x672C;">Step 8. &#x8A2D;&#x5B9A;&#x81EA;&#x52D5;&#x66F4;&#x65B0;&#x5C08;&#x6848;&#x7BC4;&#x672C;</h1>
+<blockquote>
+  <ul>
+  <li>&#x9700;&#x8981;&#x4F7F;&#x7528; <strong>rekuser</strong> &#x4F86;&#x9032;&#x884C;&#x66F4;&#x65B0;deploy-devops&#x70BA;&#x6700;&#x65B0;&#x7248;</li>
+  </ul>
+  <blockquote>
+<pre><code class="hljs bash language-bash">perl ~/deploy-devops/bin/update-perl.pl</code></pre>
+    <ul>
+    <li>III DevOps &#x7DAD;&#x8B77;&#x71B1;&#x9580;&#x8EDF;&#x9AD4;&#x958B;&#x767C;&#x4F7F;&#x7528;&#x6846;&#x67B6;&#x8207;&#x8CC7;&#x6599;&#x5EAB;&#x5C08;&#x6848;&#x7BC4;&#x672C; - <a href="https://github.com/iiidevops-templates">https://github.com/iiidevops-templates</a></li>
+    <li>&#x8ACB;&#x5148;&#x7533;&#x8ACB;&#x500B;&#x4EBA;&#x5728; github &#x4E0A;&#x7684; Token (scopes &#x53EA;&#x9700;&#x8981; public_repo &#x5373;&#x53EF;) - <a href="https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token">https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token</a></li>
+    </ul>
+  </blockquote>
+  <ul>
+  <li>&#x8ACB;&#x4F7F;&#x7528;&#x7BA1;&#x7406;&#x8005;&#x5E33;&#x865F;&#x767B;&#x5165;&#x9032;&#x884C;&#x8A2D;&#x5B9A; - <a href="http://10.20.0.71:30775/#/system-settings/system-arguments">http://10.20.0.71:30775/#/system-settings/system-arguments</a> <br>
+  <img src="https://github.com/iii-org/deploy-devops/blob/master/png/devops-ui-set-sync-templ.png?raw=true" alt="devops ui set sync templ"></li>
+  </ul>
+</blockquote>
+<h2 id="v110-&#x4EE5;&#x524D;&#x7684;&#x7248;&#x672C;&#x8A2D;&#x5B9A;">v1.10 &#x4EE5;&#x524D;&#x7684;&#x7248;&#x672C;&#x8A2D;&#x5B9A;</h2>
+<blockquote>
+  <ul>
+  <li>&#x8ACB;&#x4F7F;&#x7528;&#x4EE5;&#x4E0B;&#x8A2D;&#x5B9A;&#x9032;&#x884C;&#x540C;&#x6B65;&#x6216;&#x66F4;&#x65B0;&#x7CFB;&#x7D71;&#x7248;&#x672C;&#x81F3;&#x6700;&#x65B0;&#x7248;&#x672C;</li>
+  <li>&#x5728; VM1 &#x5EFA;&#x7ACB; cron.txt &#x5167;&#x8A2D;&#x5B9A;&#x4E0A;&#x73ED;&#x6642;&#x9593;&#x6BCF; 10 &#x5206;&#x9418;&#x9032;&#x884C;&#x6AA2;&#x67E5;&#x540C;&#x6B65;&#x7BC4;&#x672C;</li>
+  </ul>
+<pre><code class="hljs bash language-bash">  rkeuser@iiidevops-71:~$ vi cron.txt
+  ----
+  */10 7-20 * * * /home/rkeuser/deploy-devops/bin/sync-prj-templ.pl my_github_id:3563cxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxf3ba4 &gt;&gt; /tmp/sync-prj-templ.log 2&gt;&amp;1
+  ----
+  rkeuser@iiidevops-71:~$ crontab cron.txt
+  rkeuser@iiidevops-71:~$ crontab -l
+  */10 7-20 * * * /home/rkeuser/deploy-devops/bin/sync-prj-templ.pl my_github_id:3563cxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxf3ba4 &gt;&gt; /tmp/sync-prj-templ.log 2&gt;&amp;1</code></pre>
+  <ul>
+  <li>&#x63A5;&#x4E0B;&#x4F86;&#x5C31;&#x53EF;&#x4EE5;&#x5728; /tmp/sync-prj-templ.log &#x5167;&#x770B;&#x5230;&#x540C;&#x6B65;&#x7D00;&#x9304;, &#x985E;&#x4F3C;&#x5982;&#x4E0B;&#x7684;&#x8A0A;&#x606F;</li>
+  </ul>
+<pre><code class="hljs bash language-bash">  rkeuser@iiidevops-71:~$ tail /tmp/sync-prj-templ.log
+  ----
+  :
+  :
+  [18].   name:flask-postgres-todo (2021-03-11T08:18:11Z)
+          GitLab-&gt; id:252 path:flask-postgres-todo created_at:2021-03-11T09:00:53.812Z
+  [19].   name:spring-maraidb-restapi (2021-03-11T08:13:26Z)
+          GitLab-&gt; id:253 path:spring-maraidb-restapi created_at:2021-03-11T09:01:00.607Z
+  [20].   name:flask-webpage-with-men (2021-03-11T08:10:06Z)
+          GitLab-&gt; id:254 path:flask-webpage-with-men created_at:2021-03-11T09:01:02.401Z
+  rkeuser@iiidevops-71:~$</code></pre>
+</blockquote>
+<h1 id="step-9-&#x6A6B;&#x5411;&#x64F4;&#x5C55;-k8s-&#x4E3B;&#x6A5F;">Step 9. &#x6A6B;&#x5411;&#x64F4;&#x5C55; K8s &#x4E3B;&#x6A5F;</h1>
+<blockquote>
+  <ul>
+  <li>&#x5728;&#x8981;&#x64F4;&#x589E;&#x7684; VM2, VM3&#x2026;. &#x5148;&#x5B89;&#x88DD;&#x597D; Ubuntu 20.04 &#x5F8C;&#x57F7;&#x884C;&#x4EE5;&#x4E0B;&#x7684;&#x8A9E;&#x6CD5;&#x52A0;&#x5165; K8s cluster.</li>
+  <li>&#x9700;&#x8981;&#x4F7F;&#x7528; <strong>rekuser</strong> &#x4F86;&#x9032;&#x884C;&#x6574;&#x9AD4;&#x5B89;&#x88DD;&#x7A0B;&#x5E8F; </li>
+  </ul>
+  <blockquote>
+<pre><code class="hljs bash language-bash">sudo useradd -s /bin/bash -d /home/rkeuser/ -m -G sudo rkeuser
+sudo passwd rkeuser
+su - rkeuser
+
+wget https://raw.githubusercontent.com/iii-org/deploy-devops/master/bin/join-k8s-node.pl;
+perl ./join-k8s-node.pl &lt;VM1 IP&gt; &lt;&#x81EA;&#x5DF1;&#x7684; IP&gt;</code></pre>
+  </blockquote>
+</blockquote>
+<blockquote>
+  <ul>
+  <li>&#x4F8B;&#x5982; VM1 IP &#x662F; 10.20.0.71 , &#x81EA;&#x5DF1;&#x7684; IP &#x662F; 10.20.0.72 , &#x6240;&#x4EE5;&#x8A9E;&#x6CD5;&#x5982;&#x4E0B;:</li>
+  </ul>
+<pre><code class="hljs">  <span class="hljs-attribute">perl</span> ./join-k<span class="hljs-number">8</span>s-node.pl <span class="hljs-number">10.20.0.71</span> <span class="hljs-number">10.20.0.72</span></code></pre>
+</blockquote>
+<blockquote>
+  <ul>
+  <li>&#x5B89;&#x88DD;&#x904E;&#x7A0B; sudo &#x9700;&#x8981;&#x8F38;&#x5165; rkeuser &#x7684;&#x5BC6;&#x78BC;</li>
+  </ul>
+<pre><code class="hljs">  <span class="hljs-selector-tag">2021-05-07</span> <span class="hljs-selector-tag">17</span>:<span class="hljs-selector-tag">23</span>:<span class="hljs-selector-tag">09</span> (<span class="hljs-number">30.8</span> MB/s) <span class="hljs-selector-tag">-</span> &#x2018;<span class="hljs-selector-tag">iiidevops_install</span><span class="hljs-selector-class">.pl</span>&#x2019; <span class="hljs-selector-tag">saved</span> <span class="hljs-selector-attr">[8028/8028]</span>
+
+  <span class="hljs-selector-attr">[sudo]</span> <span class="hljs-selector-tag">password</span> <span class="hljs-selector-tag">for</span> <span class="hljs-selector-tag">rkeuser</span>:
+  <span class="hljs-selector-tag">-----</span></code></pre>
+</blockquote>
+<blockquote>
+  <ul>
+  <li>&#x9700;&#x8981;&#x8F38;&#x5165; yes &#x4FE1;&#x4EFB; 10.20.0.71 &#x7684; fingerprint &#x8207; rkeuser@10.20.0.71 &#x7684;&#x5BC6;&#x78BC;</li>
+  </ul>
+<pre><code class="hljs">  <span class="hljs-attribute">The</span> authenticity of host &apos;<span class="hljs-number">10.20.0.71</span> (<span class="hljs-number">10.20.0.71</span>)&apos; can&apos;t be established.
+  <span class="hljs-attribute">ECDSA</span> key fingerprint is SHA<span class="hljs-number">256</span>:dw+jgzw<span class="hljs-number">2</span>Zop<span class="hljs-number">3</span>mPIYrVtGM<span class="hljs-number">162</span>r+J<span class="hljs-number">7</span>ctEFI+aeGeZN<span class="hljs-number">6</span>uc.
+  <span class="hljs-attribute">Are</span> you sure you want to continue connecting (yes/no/[fingerprint])? yes
+  <span class="hljs-attribute">rkeuser</span>@<span class="hljs-number">10.20.0.71</span>&apos;s password:</code></pre>
+</blockquote>
+<blockquote>
+  <ul>
+  <li>&#x7D04;&#x7B49; 3-10 &#x5206;&#x9418;&#x5C31;&#x53EF;&#x4EE5;&#x770B;&#x5230; 10.20.0.72 &#x52A0;&#x5165; K8s Cluster &#x7576; Worker Node</li>
+  </ul>
+<pre><code class="hljs">  It takes <span class="hljs-number">3</span> <span class="hljs-keyword">to</span> <span class="hljs-number">10</span> minutes for <span class="hljs-number">10.20</span><span class="hljs-number">.0</span><span class="hljs-number">.72</span> <span class="hljs-keyword">to</span> <span class="hljs-keyword">join</span> the K8s cluster. Please wait..
+  <span class="hljs-params">...</span><span class="hljs-params">...</span><span class="hljs-params">...</span><span class="hljs-params">...</span><span class="hljs-params">...</span><span class="hljs-params">...</span><span class="hljs-params">...</span><span class="hljs-params">...</span><span class="hljs-params">...</span><span class="hljs-params">...</span><span class="hljs-params">...</span><span class="hljs-params">...</span><span class="hljs-params">...</span>..
+  :
+  :
+  <span class="hljs-number">10.20</span><span class="hljs-number">.0</span><span class="hljs-number">.72</span>   NotReady                   &lt;<span class="hljs-literal">none</span>&gt;                     <span class="hljs-number">7</span>s      v1<span class="hljs-number">.18</span><span class="hljs-number">.17</span>
+  :
+  <span class="hljs-number">10.20</span><span class="hljs-number">.0</span><span class="hljs-number">.72</span>   NotReady                   worker                     <span class="hljs-number">59</span>s     v1<span class="hljs-number">.18</span><span class="hljs-number">.17</span>
+  <span class="hljs-number">10.20</span><span class="hljs-number">.0</span><span class="hljs-number">.72</span>   NotReady                   worker                     <span class="hljs-number">64</span>s     v1<span class="hljs-number">.18</span><span class="hljs-number">.17</span>
+  <span class="hljs-number">10.20</span><span class="hljs-number">.0</span><span class="hljs-number">.72</span>   NotReady                   worker                     <span class="hljs-number">79</span>s     v1<span class="hljs-number">.18</span><span class="hljs-number">.17</span>
+
+  --------------------------
+  Sat <span class="hljs-number">08</span> May <span class="hljs-number">2021</span> <span class="hljs-number">02</span>:<span class="hljs-number">22</span>:<span class="hljs-number">23</span> PM CST
+  <span class="hljs-number">10.20</span><span class="hljs-number">.0</span><span class="hljs-number">.46</span>   Ready                      worker                     <span class="hljs-number">84</span>s     v1<span class="hljs-number">.18</span><span class="hljs-number">.17</span></code></pre>
+</blockquote>
+<h1 id="&#x66F4;&#x65B0;&#x7CFB;&#x7D71;">&#x66F4;&#x65B0;&#x7CFB;&#x7D71;</h1>
+<blockquote>
+  <ul>
+  <li>&#x9700;&#x8981;&#x4F7F;&#x7528; <strong>rekuser</strong> &#x4F7F;&#x7528;&#x8005;&#x4F86;&#x9032;&#x884C;&#x7CFB;&#x7D71;&#x66F4;&#x65B0;&#x6D41;&#x7A0B; </li>
+  </ul>
+  <blockquote>
+<pre><code class="hljs bash language-bash">wget -O upgrade-iiidevops.pl https://raw.githubusercontent.com/iii-org/deploy-devops/master/bin/upgrade-iiidevops.pl;
+perl ./upgrade-iiidevops.pl</code></pre>
+  </blockquote>
+</blockquote>
+    </body>
+</html>
