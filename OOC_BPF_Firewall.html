@@ -264,7 +264,7 @@ pre[data-line] .line-highlight[data-end]:after {
       <h1>Object Oriented C</h1>
 <h2 class="mume-header" id="purpose">Purpose</h2>
 
-<p>OO (Object Oriented) languages support OO design directly, but you can also successfully implement OO design in other languages, such as C. Encapsulation (Abstraction), inheritance, and polymorphism are nothing but design meta-patterns at the C level. Many C programmers have been using these fundamental patterns in some form or another for years, often without clearly realizing it. As with all design patterns, the three patterns combined allow you to work at a higher (OO) level of abstraction by introducing their specific naming conventions and idioms.</p>
+<p>OO (Object Oriented) languages support OO design directly, but you can also successfully implement OO design in other languages, such as C. <strong>Encapsulation (Abstraction), inheritance, and polymorphism</strong> are nothing but design meta-patterns at the C level. Many C programmers have been using these fundamental patterns in some form or another for years, often without clearly realizing it. As with all design patterns, the three patterns combined allow you to work at a higher (OO) level of abstraction by introducing their specific naming conventions and idioms.</p>
 <p>Why do you learn OO? There are two reasons:</p>
 <ul>
 <li><strong>Everaging OO technology</strong>: Most OO designs can be implemented in C, but many developers wouldn&apos;t consider them without the availability of an OO language. This unnecessarily limits application of the technology.</li>
@@ -273,15 +273,15 @@ pre[data-line] .line-highlight[data-end]:after {
 <p>The following sections introduce three main concept of OO.</p>
 <h2 class="mume-header" id="encapsulation-and-abstraction">Encapsulation and Abstraction</h2>
 
-<p>Packaging data with functions into classes, as well as techniques for information hiding and modularity</p>
+<p>Packaging <strong>data with functions</strong> into <strong>classes</strong>, as well as techniques for information hiding and modularity</p>
 <ul>
 <li>Attributes of the class are defined with a C <code>struct</code></li>
-<li>Methods of the class are defined as C functions. Each function takes a pointer to the attribute structure as an argument. Class methods typically follow a common naming convention
+<li>Methods of the class are defined as C functions. Each function takes a <strong>pointer to the attribute structure</strong> as an argument. Class methods typically follow a common naming convention
 <ul>
-<li>Special methods -- initialize and clean up the attribute structure -- These methods play the roles of class constructor and destructor.</li>
+<li>Special methods -- initialize and clean up the attribute structure -- These methods play the roles of class <strong>constructor</strong> and <strong>destructor</strong>.</li>
 </ul>
 </li>
-<li>Usually we set variables of an class to &quot;private&quot;. Don&apos;t get mixed up with Java &quot;private&quot;. Because there is no &quot;private&quot; attribute in C, we add __ before a variable name to remind programmers that it should not be used directly. And we create getter and setter function to retrieve and set it.</li>
+<li>Usually we set variables of an class to &quot;private&quot;. Don&apos;t get mixed up with Java &quot;private&quot;. Because there is no &quot;private&quot; attribute in C, we add __ before a variable name to remind programmers that it should be used as a private variable. Then we create <strong>getter</strong> and <strong>setter</strong> function to retrieve and set it.</li>
 </ul>
 <p>In the following example, we define a <em>Shape</em> class. Include:</p>
 <ul>
@@ -352,7 +352,7 @@ Shape_getx(&amp;myshape) // returns 2.1 + 1.1
 Shape_sety(&amp;myshape, 2.7); // set myshape.__y to 2.7
 </code></pre><h2 class="mume-header" id="inheritance">Inheritance</h2>
 
-<p>The ability to define new classes and behaviour based on existing classes to obtain code re-use and code organisation</p>
+<p>The ability to define new classes and behaviour based on <strong>existing classes</strong> to obtain code re-use and code organisation</p>
 <p>When a child class (subclass) inherits from a parent class (superclass), the subclass then includes the definitions of all the attributes and methods that the superclass defines. Usually, the subclass extends the superclass by adding attributes and methods. Objects that are instances of the subclass contain all data and can perform all operations defined by both the subclass and its parent classes.</p>
 <p>For example, if you want to create a <em>Rectangle</em> class that can use all the variables/methods <em>Shape</em> class has, you can use inheritance. Include a struct from parent class and name it <strong>super</strong> (as java do). You can also add new variables/methods for <em>Rectangle</em> class.</p>
 <p><img src="./Inheritance.png" alt="Inheritance"></p>
@@ -380,7 +380,7 @@ void Rectangle_setHeight(Rectangle * this, double height);
 <pre data-role="codeBlock" data-info class="language-"><code>/* constructor */
 void Rectangle_ctor(Rectangle * this, double x, double y, double width, double height){
     /* call the superclass&apos; ctor */
-    Shape_ctor(&amp;this-&gt;super, name, x, y);
+    Shape_ctor(&amp;this-&gt;super, x, y);
 
     this-&gt;__width = width;
     this-&gt;__height = height;
@@ -401,8 +401,8 @@ Rectangle_getHeight(&amp;rec) // returns 5.4
 Shape_getx(&amp;rec.super) // returns 2.1
 </code></pre><h2 class="mume-header" id="polymorphism">Polymorphism</h2>
 
-<p>The same message sent to different objects, which results in behaviour that is dependent on the nature of the object receiving the message</p>
-<p>Conveniently, subclasses can refine and redefine methods inherited from their parent classes. More specifically, a class can override behavior defined by its parent class by providing a different implementation of one or more inherited methods.</p>
+<p>The <strong>same message</strong> sent to different objects, which results in behaviour that is dependent on the nature of the <strong>object</strong> receiving the message</p>
+<p>Conveniently, subclasses can refine and redefine methods inherited from their parent classes. More specifically, a class can <strong>override</strong> behavior defined by its parent class by providing a different implementation of one or more inherited methods.</p>
 <p>For example, if you want to create <em>Rectangle</em> and <em>Circle</em> class, both inherits from <em>Shape</em> class, and both has <em>Shape_area</em> and <em>Shape_draw</em> method but with their own execution. We add a struct <strong>ShapeVtbl</strong>, which contains all the polymorphism function pointers (i.e. <em>area</em> and <em>draw</em> which takes a <em>Shape</em> object pointer as a function parameter). These pointers can point to a different function as needed. And create <em>Shape_area</em> and <em>Shape_draw</em> method to provide a common way to call these functions defined in <strong>ShapeVtbl</strong>:</p>
 <p><img src="./Polymorphism.png" alt="Polymorphism"></p>
 <pre data-role="codeBlock" data-info class="language-"><code>/* shape.h */
@@ -492,6 +492,249 @@ Rectangle_ctor(&amp;rec2, 2.3, 3.5, 6.0, 2.5);
 
 /* Use area function */
 Shape_area(&amp;rec2.super) // returns 6.0 * 2.5
+</code></pre><h1 class="mume-header" id="cgreen-bdd">CGreen BDD</h1>
+
+<h2 class="mume-header" id="what-is-cgreen-why-test">What is Cgreen? Why test?</h2>
+
+<p><strong>Cgreen</strong> is a unit tester for the C and C++ software developer, a test automation and software quality assurance tool for programmers and development teams. The tool is completely open source published under the <em>ISC, OpenBSD, license</em>.</p>
+<p>Unit testing is a development practice popularised by the agile development community. It is characterised by writing many small tests alongside the normal code. Often the tests are written before the code they are testing, in a tight test-code-refactor loop. Done this way, the practice is known as Test Driven Development. <strong>Cgreen</strong> was designed specifically to support this style of development.</p>
+<p>Unit tests are written in the same language as the code, in our case C or C++. This avoids the mental overhead of constantly switching language, and also allows you to use any application code in your tests.</p>
+<p>Test driven development (TDD) really catched on when the JUnit framework for Java spread to other langauges, giving us a family of xUnit tools. <strong>Cgreen</strong> was born in this wave and have many similarities to the xUnit family.</p>
+<p>But TDD evolved over time and modern thinking and practice is more along the lines of BDD, an acronym for Behaviour Driven Development, made popular by people like Dan North and frameworks like JBehave, RSpec, Cucumber and Jasmine.</p>
+<p>Cgreen follows this trend and has evolved to embrace a BDD-flavoured style of testing. Although the fundamental mechanisms in TDD and &apos;technical&apos; BDD are much the same, the shift in focus by changing wording from &apos;tests&apos; to &apos;behaviour specifications&apos; is very significant.</p>
+<p>Install <strong>CGreen</strong> on Debian with:</p>
+<pre data-role="codeBlock" data-info class="language-"><code>apt-get install cgreenl
+</code></pre><h2 class="mume-header" id="test-structure">Test structure</h2>
+
+<p>There are one main test execution file and one or more test file</p>
+<h3 class="mume-header" id="test-file">test file</h3>
+
+<ul>
+<li>The <code>Describe</code> macro must name the SUT (System Under Test)</li>
+<li>The <code>BeforeEach</code> function and the <code>AfterEach</code> functions must exist and name the SUT. They are usually empty, but you can define something to do before and after each test in the test suite</li>
+<li>The <code>Ensure</code> macro takes two arguments (in the BDD style) where the first is the SUT which must be declared with the <code>Describe</code> macro. The second argument is the test name and can be anything you want as long as it fullfills the rules for an identifier in C and C++. Usually about the unit test itself. In each <code>Ensure</code> macro is one or more assertion to be verified.</li>
+<li>After all unit tests are defined, add them in the testSuite.</li>
+</ul>
+<pre data-role="codeBlock" data-info class="language-"><code>#include &lt;cgreen/cgreen.h&gt;
+
+Describe(my_system_under_test);
+BeforeEach(my_system_under_test) { /* do something before each test, if any */}
+AfterEach(my_system_under_test) { /* do something after each test, if any */}
+
+Ensure(my_system_under_test, test_something) {
+  /* Do something in the first test */
+    assertion11;
+    assertion12;
+    ...
+}
+
+Ensure(my_system_under_test, test_another) {
+    /* Do something in the second test */
+    assertion21;
+    assertion22;
+    ...
+}
+
+...
+
+TestSuite *my_system_under_test() {
+    TestSuite *suite = create_test_suite();
+    add_test_with_context(suite, my_system_under_test, test_something);
+    add_test_with_context(suite, my_system_under_test, test_another);
+    ...
+  return suite;
+}
+</code></pre><p>The conditions in each <code>Ensure</code> macro looks like this:</p>
+<pre data-role="codeBlock" data-info class="language-"><code>/* for all assertions except double type values */
+assert_that(expected, constraint);
+
+/* for assertions on double type values */
+/* you can set the number of significant digits with significant_figures_for_assert_double_are(int figures) */
+assert_that_double(expected, constraint);
+</code></pre><p>The call to <code>assert_that()</code> is the primary part of an assertion, which is complemented with a constraint as a parameter. This makes a very fluent interface to the asserts, that actually reads like English. For example, you want to verify that <code>myone + 1 == 2</code> is true. Then you write this assertion as <code>assert_that(myone + 1, is_equal_to(2));</code> Here is a list of constraints:</p>
+<table>
+<thead>
+<tr>
+<th>Basic Constraint</th>
+<th>Passes if actual value/expression&#x2026;&#x200B;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>is_true</td>
+<td>evaluates to true</td>
+</tr>
+<tr>
+<td>is_false</td>
+<td>evaluates to false</td>
+</tr>
+<tr>
+<td>is_null</td>
+<td>equals null</td>
+</tr>
+<tr>
+<td>is_non_null</td>
+<td>is a non null value</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Integer Constraint</th>
+<th>Passes if actual value/expression&#x2026;&#x200B;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>is_equal_to(value)</td>
+<td>&apos;== value&apos;</td>
+</tr>
+<tr>
+<td>is_equal_to_hex(value)</td>
+<td>&apos;== value&apos;, but will show values in HEX</td>
+</tr>
+<tr>
+<td>is_not_equal_to(value)</td>
+<td>&apos;!= value&apos;</td>
+</tr>
+<tr>
+<td>is_greater_than(value)</td>
+<td>&apos;&gt; value&apos;</td>
+</tr>
+<tr>
+<td>is_less_than(value)</td>
+<td>&apos;&lt; value&apos;</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Strings Constraint</th>
+<th>Passes if actual value/expression&#x2026;&#x200B;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>is_equal_to_string(value)</td>
+<td>are equal when compared using <code>strcmp()</code></td>
+</tr>
+<tr>
+<td>is_not_equal_to_string(value)</td>
+<td>are not equal when compared using <code>strcmp()</code></td>
+</tr>
+<tr>
+<td>contains_string(value)</td>
+<td>contains <code>value</code> when evaluated using <code>strstr()</code></td>
+</tr>
+<tr>
+<td>does_not_contain_string(value)</td>
+<td>does not contain <code>value</code> when evaluated using <code>strstr()</code></td>
+</tr>
+<tr>
+<td>begins_with_string(value)</td>
+<td>starts with the string <code>value</code></td>
+</tr>
+<tr>
+<td>does_not_begin_with_string(value)</td>
+<td>does not start with the string <code>value</code></td>
+</tr>
+<tr>
+<td>ends_with_string(value)</td>
+<td>ends with the string <code>value</code></td>
+</tr>
+<tr>
+<td>does_not_end_with_string(value)</td>
+<td>does not end with the string <code>value</code></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Double floats Constraint</th>
+<th>Passes if actual value/expression&#x2026;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>is_equal_to_double(value)</td>
+<td>are equal to <code>value</code> within the number of significant digits</td>
+</tr>
+<tr>
+<td>is_not_equal_to_double(value)</td>
+<td>are not equal to <code>value</code> within the number of significant digits</td>
+</tr>
+<tr>
+<td>is_less_than_double(value)</td>
+<td>&lt; <code>value</code> within the number of significant digits</td>
+</tr>
+<tr>
+<td>is_greater_than_double(value)</td>
+<td>&gt; <code>value</code> within the number of significant digits</td>
+</tr>
+</tbody>
+</table>
+<p>A mock is basically a programmable object. In C objects are limited to functions, so this is a mock function. The macro <code>mock()</code> compares the incoming parameters with any expected values and dispatches messages to the test suite if there is a mismatch. It also returns any values that have been preprogrammed in the test.</p>
+<pre data-role="codeBlock" data-info class="language-"><code>#include &lt;cgreen/mocks.h&gt;
+
+/* define mock function. In this case, it has two integer variables to observe */
+void mocked_callback(int x, int y) {
+    mock(x, y);
+}
+
+/* define the function you want to observe */
+void Mock_add_more(){
+  /* Do something */
+  /* Insert your mock function anywhere along with the variables you want to observe at that time */
+	mocked_callback(varA, varB);
+  ...
+}
+
+Ensure(mock_testSUT, mock_test) {
+  /* assert the variables (mock function parameter) whenever the mocck function is ccalled, in order. */
+	expect(mocked_callback,
+			when(x, constraintX),
+			when(y, constraintY));
+
+  /* call the function you want to observe */
+	Mock_add_more();
+}
+</code></pre><h3 class="mume-header" id="test-execution-file">test execution file</h3>
+
+<p>Just add TestSuite pointer from your test file.</p>
+<pre data-role="codeBlock" data-info class="language-"><code>#include &lt;cgreen/cgreen.h&gt;
+
+
+/* Declare testSuites from your test file */
+TestSuite *mytest1();
+TestSuite *mytest2();
+...
+
+int main(int argc, char **argv) {
+    TestSuite *suite = create_test_suite();
+
+    /* add testSuites */
+    add_suite(suite, mytest1());
+    add_suite(suite, mytest2());
+    ...
+    if (argc &gt; 1) {
+        return run_single_test(suite, argv[1], create_text_reporter());
+    }
+    return run_test_suite(suite, create_text_reporter());
+}
+</code></pre><h2 class="mume-header" id="compile-your-tests">Compile your tests</h2>
+
+<p>If you have two test file: <code>test1.c</code> and <code>test2.c</code>; and one test execution file: <code>start_test.c</code></p>
+<pre data-role="codeBlock" data-info class="language-"><code># compile
+clang -g -O2 -Wall -I . -c test1.c -o test1.o
+clang -g -O2 -Wall -I . -c test2.c -o test2.o
+clang -g -O2 -Wall -I . -c start_test.c -o start_test.o
+clang -Wall -O2 -g test1.o test2.o start_test.o -lcgreen -o start_test
+
+# start test
+./start_test
 </code></pre><h1 class="mume-header" id="firewall">Firewall</h1>
 
 <h2 class="mume-header" id="introduction">introduction</h2>
