@@ -1,0 +1,464 @@
+<!DOCTYPE html><html><head>
+      <title>xilinx_and_PYNQ</title>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      
+      <link rel="stylesheet" href="file:////Users/user/.atom/packages/markdown-preview-enhanced/node_modules/@shd101wyy/mume/dependencies/katex/katex.min.css">
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      <style>
+      /**
+ * prism.js Github theme based on GitHub's theme.
+ * @author Sam Clarke
+ */
+code[class*="language-"],
+pre[class*="language-"] {
+  color: #333;
+  background: none;
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  text-align: left;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  word-wrap: normal;
+  line-height: 1.4;
+
+  -moz-tab-size: 8;
+  -o-tab-size: 8;
+  tab-size: 8;
+
+  -webkit-hyphens: none;
+  -moz-hyphens: none;
+  -ms-hyphens: none;
+  hyphens: none;
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+  padding: .8em;
+  overflow: auto;
+  /* border: 1px solid #ddd; */
+  border-radius: 3px;
+  /* background: #fff; */
+  background: #f5f5f5;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+  padding: .1em;
+  border-radius: .3em;
+  white-space: normal;
+  background: #f5f5f5;
+}
+
+.token.comment,
+.token.blockquote {
+  color: #969896;
+}
+
+.token.cdata {
+  color: #183691;
+}
+
+.token.doctype,
+.token.punctuation,
+.token.variable,
+.token.macro.property {
+  color: #333;
+}
+
+.token.operator,
+.token.important,
+.token.keyword,
+.token.rule,
+.token.builtin {
+  color: #a71d5d;
+}
+
+.token.string,
+.token.url,
+.token.regex,
+.token.attr-value {
+  color: #183691;
+}
+
+.token.property,
+.token.number,
+.token.boolean,
+.token.entity,
+.token.atrule,
+.token.constant,
+.token.symbol,
+.token.command,
+.token.code {
+  color: #0086b3;
+}
+
+.token.tag,
+.token.selector,
+.token.prolog {
+  color: #63a35c;
+}
+
+.token.function,
+.token.namespace,
+.token.pseudo-element,
+.token.class,
+.token.class-name,
+.token.pseudo-class,
+.token.id,
+.token.url-reference .token.variable,
+.token.attr-name {
+  color: #795da3;
+}
+
+.token.entity {
+  cursor: help;
+}
+
+.token.title,
+.token.title .token.punctuation {
+  font-weight: bold;
+  color: #1d3e81;
+}
+
+.token.list {
+  color: #ed6a43;
+}
+
+.token.inserted {
+  background-color: #eaffea;
+  color: #55a532;
+}
+
+.token.deleted {
+  background-color: #ffecec;
+  color: #bd2c00;
+}
+
+.token.bold {
+  font-weight: bold;
+}
+
+.token.italic {
+  font-style: italic;
+}
+
+
+/* JSON */
+.language-json .token.property {
+  color: #183691;
+}
+
+.language-markup .token.tag .token.punctuation {
+  color: #333;
+}
+
+/* CSS */
+code.language-css,
+.language-css .token.function {
+  color: #0086b3;
+}
+
+/* YAML */
+.language-yaml .token.atrule {
+  color: #63a35c;
+}
+
+code.language-yaml {
+  color: #183691;
+}
+
+/* Ruby */
+.language-ruby .token.function {
+  color: #333;
+}
+
+/* Markdown */
+.language-markdown .token.url {
+  color: #795da3;
+}
+
+/* Makefile */
+.language-makefile .token.symbol {
+  color: #795da3;
+}
+
+.language-makefile .token.variable {
+  color: #183691;
+}
+
+.language-makefile .token.builtin {
+  color: #0086b3;
+}
+
+/* Bash */
+.language-bash .token.keyword {
+  color: #0086b3;
+}
+
+/* highlight */
+pre[data-line] {
+  position: relative;
+  padding: 1em 0 1em 3em;
+}
+pre[data-line] .line-highlight-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: transparent;
+  display: block;
+  width: 100%;
+}
+
+pre[data-line] .line-highlight {
+  position: absolute;
+  left: 0;
+  right: 0;
+  padding: inherit 0;
+  margin-top: 1em;
+  background: hsla(24, 20%, 50%,.08);
+  background: linear-gradient(to right, hsla(24, 20%, 50%,.1) 70%, hsla(24, 20%, 50%,0));
+  pointer-events: none;
+  line-height: inherit;
+  white-space: pre;
+}
+
+pre[data-line] .line-highlight:before, 
+pre[data-line] .line-highlight[data-end]:after {
+  content: attr(data-start);
+  position: absolute;
+  top: .4em;
+  left: .6em;
+  min-width: 1em;
+  padding: 0 .5em;
+  background-color: hsla(24, 20%, 50%,.4);
+  color: hsl(24, 20%, 95%);
+  font: bold 65%/1.5 sans-serif;
+  text-align: center;
+  vertical-align: .3em;
+  border-radius: 999px;
+  text-shadow: none;
+  box-shadow: 0 1px white;
+}
+
+pre[data-line] .line-highlight[data-end]:after {
+  content: attr(data-end);
+  top: auto;
+  bottom: .4em;
+}html body{font-family:"Helvetica Neue",Helvetica,"Segoe UI",Arial,freesans,sans-serif;font-size:16px;line-height:1.6;color:#333;background-color:#fff;overflow:initial;box-sizing:border-box;word-wrap:break-word}html body>:first-child{margin-top:0}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{line-height:1.2;margin-top:1em;margin-bottom:16px;color:#000}html body h1{font-size:2.25em;font-weight:300;padding-bottom:.3em}html body h2{font-size:1.75em;font-weight:400;padding-bottom:.3em}html body h3{font-size:1.5em;font-weight:500}html body h4{font-size:1.25em;font-weight:600}html body h5{font-size:1.1em;font-weight:600}html body h6{font-size:1em;font-weight:600}html body h1,html body h2,html body h3,html body h4,html body h5{font-weight:600}html body h5{font-size:1em}html body h6{color:#5c5c5c}html body strong{color:#000}html body del{color:#5c5c5c}html body a:not([href]){color:inherit;text-decoration:none}html body a{color:#08c;text-decoration:none}html body a:hover{color:#00a3f5;text-decoration:none}html body img{max-width:100%}html body>p{margin-top:0;margin-bottom:16px;word-wrap:break-word}html body>ul,html body>ol{margin-bottom:16px}html body ul,html body ol{padding-left:2em}html body ul.no-list,html body ol.no-list{padding:0;list-style-type:none}html body ul ul,html body ul ol,html body ol ol,html body ol ul{margin-top:0;margin-bottom:0}html body li{margin-bottom:0}html body li.task-list-item{list-style:none}html body li>p{margin-top:0;margin-bottom:0}html body .task-list-item-checkbox{margin:0 .2em .25em -1.8em;vertical-align:middle}html body .task-list-item-checkbox:hover{cursor:pointer}html body blockquote{margin:16px 0;font-size:inherit;padding:0 15px;color:#5c5c5c;background-color:#f0f0f0;border-left:4px solid #d6d6d6}html body blockquote>:first-child{margin-top:0}html body blockquote>:last-child{margin-bottom:0}html body hr{height:4px;margin:32px 0;background-color:#d6d6d6;border:0 none}html body table{margin:10px 0 15px 0;border-collapse:collapse;border-spacing:0;display:block;width:100%;overflow:auto;word-break:normal;word-break:keep-all}html body table th{font-weight:bold;color:#000}html body table td,html body table th{border:1px solid #d6d6d6;padding:6px 13px}html body dl{padding:0}html body dl dt{padding:0;margin-top:16px;font-size:1em;font-style:italic;font-weight:bold}html body dl dd{padding:0 16px;margin-bottom:16px}html body code{font-family:Menlo,Monaco,Consolas,'Courier New',monospace;font-size:.85em !important;color:#000;background-color:#f0f0f0;border-radius:3px;padding:.2em 0}html body code::before,html body code::after{letter-spacing:-0.2em;content:"\00a0"}html body pre>code{padding:0;margin:0;font-size:.85em !important;word-break:normal;white-space:pre;background:transparent;border:0}html body .highlight{margin-bottom:16px}html body .highlight pre,html body pre{padding:1em;overflow:auto;font-size:.85em !important;line-height:1.45;border:#d6d6d6;border-radius:3px}html body .highlight pre{margin-bottom:0;word-break:normal}html body pre code,html body pre tt{display:inline;max-width:initial;padding:0;margin:0;overflow:initial;line-height:inherit;word-wrap:normal;background-color:transparent;border:0}html body pre code:before,html body pre tt:before,html body pre code:after,html body pre tt:after{content:normal}html body p,html body blockquote,html body ul,html body ol,html body dl,html body pre{margin-top:0;margin-bottom:16px}html body kbd{color:#000;border:1px solid #d6d6d6;border-bottom:2px solid #c7c7c7;padding:2px 4px;background-color:#f0f0f0;border-radius:3px}@media print{html body{background-color:#fff}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{color:#000;page-break-after:avoid}html body blockquote{color:#5c5c5c}html body pre{page-break-inside:avoid}html body table{display:table}html body img{display:block;max-width:100%;max-height:100%}html body pre,html body code{word-wrap:break-word;white-space:pre}}.markdown-preview{width:100%;height:100%;box-sizing:border-box}.markdown-preview .pagebreak,.markdown-preview .newpage{page-break-before:always}.markdown-preview pre.line-numbers{position:relative;padding-left:3.8em;counter-reset:linenumber}.markdown-preview pre.line-numbers>code{position:relative}.markdown-preview pre.line-numbers .line-numbers-rows{position:absolute;pointer-events:none;top:1em;font-size:100%;left:0;width:3em;letter-spacing:-1px;border-right:1px solid #999;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.markdown-preview pre.line-numbers .line-numbers-rows>span{pointer-events:none;display:block;counter-increment:linenumber}.markdown-preview pre.line-numbers .line-numbers-rows>span:before{content:counter(linenumber);color:#999;display:block;padding-right:.8em;text-align:right}.markdown-preview .mathjax-exps .MathJax_Display{text-align:center !important}.markdown-preview:not([for="preview"]) .code-chunk .btn-group{display:none}.markdown-preview:not([for="preview"]) .code-chunk .status{display:none}.markdown-preview:not([for="preview"]) .code-chunk .output-div{margin-bottom:16px}.scrollbar-style::-webkit-scrollbar{width:8px}.scrollbar-style::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}.scrollbar-style::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,0.66);border:4px solid rgba(150,150,150,0.66);background-clip:content-box}html body[for="html-export"]:not([data-presentation-mode]){position:relative;width:100%;height:100%;top:0;left:0;margin:0;padding:0;overflow:auto}html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview{position:relative;top:0}@media screen and (min-width:914px){html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview{padding:2em calc(50% - 457px + 2em)}}@media screen and (max-width:914px){html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview{font-size:14px !important;padding:1em}}@media print{html body[for="html-export"]:not([data-presentation-mode]) #sidebar-toc-btn{display:none}}html body[for="html-export"]:not([data-presentation-mode]) #sidebar-toc-btn{position:fixed;bottom:8px;left:8px;font-size:28px;cursor:pointer;color:inherit;z-index:99;width:32px;text-align:center;opacity:.4}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] #sidebar-toc-btn{opacity:1}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc{position:fixed;top:0;left:0;width:300px;height:100%;padding:32px 0 48px 0;font-size:14px;box-shadow:0 0 4px rgba(150,150,150,0.33);box-sizing:border-box;overflow:auto;background-color:inherit}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar{width:8px}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,0.66);border:4px solid rgba(150,150,150,0.66);background-clip:content-box}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc a{text-decoration:none}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc ul{padding:0 1.6em;margin-top:.8em}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc li{margin-bottom:.8em}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc ul{list-style-type:none}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{left:300px;width:calc(100% -  300px);padding:2em calc(50% - 457px -  150px);margin:0;box-sizing:border-box}@media screen and (max-width:1274px){html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{width:100%}}html body[for="html-export"]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .markdown-preview{left:50%;transform:translateX(-50%)}html body[for="html-export"]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .md-sidebar-toc{display:none}
+/* Please visit the URL below for more information: */
+/*   https://shd101wyy.github.io/markdown-preview-enhanced/#/customize-css */
+
+      </style>
+    </head>
+    <body for="html-export">
+      <div class="mume markdown-preview  ">
+      <h1 class="mume-header" id="getting-started-with-vitis">Getting started with Vitis</h1>
+
+<h2 class="mume-header" id="introduction-to-the-vitis-environment-for-acceleration">Introduction to the Vitis Environment for Acceleration</h2>
+
+<h3 class="mume-header" id="accelerated-flow-application-development-using-the-vitis-software-platform">Accelerated Flow Application Development Using the Vitis Software Platform</h3>
+
+<p><img src="Vitis_Unified_Software_Platform.png" alt="Vitis Unified Software Platform"></p>
+<p>As shown in the figure above, the Vitis unified software platform consists of the following features and elements:</p>
+<ul>
+<li>Vitis technology targets acceleration hardware platforms, such as the Alveo&#x2122; Data Center accelerator cards, and Versal&#xAE; or Zynq&#xAE; UltraScale+&#x2122; MPSoC-based embedded processor platforms.</li>
+<li>XRT provides an API and drivers for your host program to connect with the target platform, and handles transactions between your host program and accelerated kernels.</li>
+<li>Vitis core development kit provides the software development tool stack, such as compilers and cross-compilers, to build your host program and kernel code, analyzers to let you profile and analyze the performance of your application, and debuggers to help you locate and fix any problems in your application.</li>
+<li>Vitis accelerated libraries provide performance-optimized FPGA acceleration with minimal code changes, and without the need to re-implement your algorithms to harness the benefits of Xilinx adaptive computing. Vitis accelerated libraries are available for common functions of math, statistics, linear algebra and DSP, and also for domain specific applications, like vision and image processing, quantitative finance, database, data analytics, and data compression.</li>
+</ul>
+<h3 class="mume-header" id="execution-model">Execution Model</h3>
+
+<p>In the Vitis core development kit, an application program is split between a host application and hardware accelerated kernels with a communication channel between them. The host program, written in C/C++ and using API abstractions like OpenCL, is compiled into an executable that runs on a host processor (such as an x86 server or an Arm processor for embedded platforms); while hardware accelerated kernels are compiled into an executable device binary (<code>.xclbin</code>) that runs within the programmable logic (PL) region of a Xilinx device.</p>
+<p>The API calls, managed by XRT, are used to process transactions between the host program and the hardware accelerators. Communication between the host and the kernel, including control and data transfers, occurs across the PCIe&#xAE; bus or an AXI bus for embedded platforms. While control information is transferred between specific memory locations in the hardware, global memory is used to transfer data between the host program and the kernels. Global memory is accessible by both the host processor and hardware accelerators, while host memory is only accessible by the host application.</p>
+<p>For instance, in a typical application, the host first transfers data to be operated on by the kernel from host memory into global memory. The kernel subsequently operates on the data, storing results back to the global memory. Upon kernel completion, the host transfers the results back into the host memory. Data transfers between the host and global memory introduce latency, which can be costly to the overall application. To achieve acceleration in a real system, the benefits achieved by the hardware acceleration kernels must outweigh the added latency of the data transfers.</p>
+<p>The target platform contains the FPGA accelerated kernels, global memory, and the direct memory access (DMA) for memory transfers. Kernels can have one or more global memory interfaces and are programmable. The Vitis core development kit execution model can be broken down into the following steps:</p>
+<ol>
+<li>The host program writes the data needed by a kernel into the global memory of the attached device through the PCIe interface on an Alveo Data Center accelerator card, or through the AXI bus on an embedded platform.</li>
+<li>The host program sets up the kernel with its input parameters.</li>
+<li>The host program triggers the execution of the kernel function on the FPGA.</li>
+<li>The kernel performs the required computation while reading data from global memory, as necessary.</li>
+<li>The kernel writes data back to global memory and notifies the host that it has completed its task.</li>
+<li>The host program reads data back from global memory into the host memory and continues processing as needed.</li>
+</ol>
+<p>The FPGA can accommodate multiple kernel instances on the accelerator, both different types of kernels, and multiple instances of the same kernel. XRT transparently orchestrates the interactions between the host program and kernels in the accelerator</p>
+<h3 class="mume-header" id="embedded-processor-application-acceleration-development-flow">Embedded Processor Application Acceleration Development Flow</h3>
+
+<p><img src="Application_Development_Flow_for_Versal_ACAP_and_Zynq_UltraScale+_MPSoC_Devices.png" alt="Application Development Flow for Versal ACAP and Zynq UltraScale+ MPSoC Devices"></p>
+<ul>
+<li>PS Application Compilation<br>
+Compile the host application to run on the Cortex&#xAE;-A72 or Cortex-A53 core processor using the GNU Arm cross-compiler to create an ELF file. The host program interacts with kernels in the PL and AI Engine regions of the device.</li>
+<li>AI Engine Array (Optional for Versal AI Engine Core series only)<br>
+Some Versal ACAP devices incorporate an AI Engine array of very-long instruction word (VLIW) processors with single instruction multiple data (SIMD) vector units that are highly optimized for compute-intensive applications such as 5G wireless and artificial intelligence (AI) applications. AI Engine graphs and kernels are built using Vitis tools such as the <code>aiecompiler</code>, and can be integrated into the embedded processor application acceleration flow.</li>
+<li>PL Kernel Compilation and Linking<br>
+PL kernels are compiled for implementation in the PL region of the target platform. PL kernels can be compiled into Xilinx object form (XO) file using the Vitis compiler (<code>v++</code>) or Vitis HLS for C/C++ kernels, or the <code>package_xo</code> command for RTL kernels.<br>
+The Vitis compiler also links the kernel XO files with the hardware platform to create a device executable (<code>.xclbin</code>) for the application.<br>
+Xilinx object (XO) files are linked with the target hardware platform by the v++ --link command to create a device binary file (<code>.xclbin</code>) that is loaded into the Xilinx device on the target platform.</li>
+<li>System Package<br>
+Use the <code>v++ --package</code> command to gather the required files to configure and boot the system, to load and run the application, including the host application and PL kernel binaries. This step builds the necessary package to run software or hardware emulation and debug, or to create an SD card to run your application on hardware.</li>
+<li>Running the Application<br>
+When running the application, you can run software emulation, hardware emulation, or run on the actual physical accelerator platform. Running the application on embedded processor platforms is different from running on data center accelerator cards.
+<ul>
+<li>When the build target is software or hardware emulation, the QEMU environment models the hardware device. The Vitis compiler generates simulation models of the kernels in the device binary and running the application runs in the QEMU model of the system. Emulation targets let you build, run, and iterate the design over relatively quick cycles; debugging the application and evaluating performance.</li>
+<li>When the build target is the hardware system, the target platform is the physical device. The Vitis compiler generates the .xclbin using the Vivado Design Suite to run synthesis and implementation, and resolve timing. Running the application runs your system on the hardware. The build process is automated to generate high quality results; however, hardware-savvy developers can fully leverage the Vivado tools in their design process.</li>
+</ul>
+</li>
+</ul>
+<h3 class="mume-header" id="build-targets">Build Targets</h3>
+
+<p>The Vitis compiler build process generates the host program executable and the FPGA binary (.xclbin). The nature of the FPGA binary is determined by the build target.</p>
+<ul>
+<li>When the build target is software or hardware emulation, the Vitis compiler generates simulation models of the kernels in the FPGA binary. These emulation targets let you build, run, and iterate the design over relatively quick cycles; debugging the application and evaluating performance.</li>
+<li>When the build target is the hardware system, Vitis compiler generates the .xclbin for the hardware accelerator, using the Vivado Design Suite to run synthesis and implementation. It uses these tools with predefined settings proven to provide good quality of results. Using the Vitis core development kit does not require knowledge of these tools; however, hardware-savvy developers can fully leverage these tools and use all the available features to implement kernels.</li>
+</ul>
+<p>The Vitis compiler provides three different build targets, two emulation targets used for debug and validation purposes, and the default hardware target used to generate the actual FPGA binary:</p>
+<ul>
+<li>Software Emulation (sw_emu)<br>
+Both the host application code and the kernel code are compiled to run on the host processor. This allows iterative algorithm refinement through fast build-and-run loops. This target is useful for identifying syntax errors, performing source-level debugging of the kernel code running together with application, and verifying the behavior of the system.</li>
+<li>Hardware Emulation (hw_emu)<br>
+The kernel code is compiled into a hardware model (RTL), which is run in a dedicated simulator. This build-and-run loop takes longer but provides a detailed, cycle-accurate view of kernel activity. This target is useful for testing the functionality of the logic that will go in the FPGA and getting initial performance estimates.</li>
+<li>Hardware (hw)<br>
+The kernel code is compiled into a hardware model (RTL) and then implemented on the FPGA, resulting in a binary that will run on the actual FPGA.</li>
+</ul>
+<h2 class="mume-header" id="vitis-software-development-workflow">Vitis Software Development Workflow</h2>
+
+<p>The following figure shows the embedded software application development workflow for the Vitis unified software platform.</p>
+<p><img src="./Embedded_Software_Application_Development_Workflow.png" alt="Embedded Software Application Development Workflow"></p>
+<ul>
+<li>Hardware engineers design the logic and export information required by software development from the Vivado&#xAE; Design Suite to an XSA archive file.</li>
+<li>Software developers import XSA into the Vitis software platform by creating a platform. Platform was heavily used by application acceleration projects. To unify the Vitis workspace architecture for all kinds of applications, software development projects now migrate to platform and application architecture. A platform includes hardware specification and software environment settings.</li>
+<li>The software environment settings are called domains, which are also a part of a platform.</li>
+<li>Software developers create applications based on the platform and domains.</li>
+<li>Applications can be debugged in the Vitis IDE.</li>
+<li>In a complex system, several applications may run at the same time and communicate with each other. So the system level verification needs to be done as well.</li>
+<li>After everything is ready, the Vitis IDE can help to create boot images which initialize the system and launch applications.</li>
+</ul>
+<h2 class="mume-header" id="workspace-structure-in-the-vitis-software-platform">Workspace Structure in the Vitis Software Platform</h2>
+
+<p>There are two project types in Vitis workspace:</p>
+<p><img src="./Vitis_Software_Platform_Project_Types.png" alt="Vitis Software Platform Project Types"></p>
+<ul>
+<li>Workspace<br>
+When you open the Vitis software platform, you create a workspace. A workspace is a directory location used by the Vitis software platform to store project data and metadata. An initial workspace location must be provided when the Vitis software platform is launched.</li>
+<li>XSA<br>
+XSAs are exported from the Vivado Design Suite. It has the hardware specifications like processor configuration properties, peripheral connection information, address map, and device initialization code. You have to provide the XSA when creating a platform project.</li>
+<li>Platform<br>
+The <em>target platform</em> or <em>platform</em> is a combination of hardware components (XSA) and software components (domains/BSPs, boot components such as FSBL, and so on). Platforms in the repository are not editable. Platforms in the workspace are editable, and are referred to as <em>platform projects</em>.</li>
+<li>Platform Project<br>
+A platform project provides hardware information and a software runtime environment. It is customizable; you can add domains and modify domain settings. A platform project can be created by importing an XSA, or by importing an existing platform. Several <em>system projects</em> can be built on the same platform project so that hardware and software environment settings can be shared.</li>
+<li>Domain<br>
+A domain is a board support package (BSP) or the operating system (OS) with a collection of software drivers on which to build your application. The created software image contains only the portions of the Xilinx library you use in your embedded design. You can create multiple applications to run on the domain. A domain is tied to a single processor or a cluster of isomorphic processors (for example: A53_0 or A53) in the platform.</li>
+<li>System Project<br>
+A system project groups together applications that run simultaneously on a device. Two standalone applications for the same processor cannot sit together in a system project. Two Linux applications can sit together in a system project. A workspace can contain multiple system projects.</li>
+<li>Application (Software Project)<br>
+A software project contains one or more source files, along with the necessary header files, to allow compilation and generation of a binary output (ELF) file. A system project can contain multiple application projects. Each software project must have a corresponding domain</li>
+</ul>
+<h1 class="mume-header" id="pynq-overlays">PYNQ overlays</h1>
+
+<p>The Xilinx&#xAE; Zynq&#xAE; All Programmable device is an SOC based on a dual-core ARM&#xAE; Cortex&#xAE;-A9 processor (referred to as the Processing System or <strong>PS</strong>), integrated with FPGA fabric (referred to as Programmable Logic or <strong>PL</strong>). The PS subsystem includes a number of dedicated peripherals (memory controllers, USB, Uart, IIC, SPI etc) and can be extended with additional hardware IP in a PL Overlay.</p>
+<p><img src="zynq_block_diagram.png" alt="zynq block diagram"></p>
+<p>Overlays, or hardware libraries, are programmable/configurable FPGA designs that extend the user application from the Processing System of the Zynq into the Programmable Logic. Overlays can be used to accelerate a software application, or to customize the hardware platform for a particular application.</p>
+<p>For example, image processing is a typical application where the FPGAs can provide acceleration. A software programmer can use an overlay in a similar way to a software library to run some of the image processing functions (e.g. edge detect, thresholding etc.) on the FPGA fabric. Overlays can be loaded to the FPGA dynamically, as required, just like a software library. In this example, separate image processing functions could be implemented in different overlays and loaded from Python on demand.</p>
+<p>PYNQ provides a Python interface to allow overlays in the <em>PL</em> to be controlled from Python running in the <em>PS</em>. FPGA design is a specialized task which requires hardware engineering knowledge and expertise. PYNQ overlays are created by hardware designers, and wrapped with this PYNQ Python API. Software developers can then use the Python interface to program and control specialized hardware overlays without needing to design an overlay themselves. This is analogous to software libraries created by expert developers which are then used by many other software developers working at the application level.</p>
+<p>An overlay consists of two main parts; the PL design (bitstream) and the project HWH file. Overlay design is a specialized task for hardware engineers.</p>
+<p>The HWH (hardware handoff) file is automatically generated from the Vivado IP Integrator block design and it is used by PYNQ to automatically identify the Zynq system configuration, IP including versions, interrupts, resets, and other control signals. Based on this information, some parts of the system configuration can be automatically modified from PYNQ, drivers can be automatically assigned, features can be enabled or disabled, and signals can be connected to corresponding Python methods.</p>
+<h2 class="mume-header" id="loading-an-overlay">Loading an Overlay</h2>
+
+<p>By default, an overlay (bitstream) called <em>base</em> is downloaded into the PL at boot time. The base overlay can be considered like a reference design for a board. New overlays can be installed or copied to the board and can be loaded into the PL as the system is running.</p>
+<p>An overlay usually includes:</p>
+<ul>
+<li>A bitstream to configure the FPGA fabric</li>
+<li>A Vivado design HWH file to determine the available IP</li>
+<li>Python API that exposes the IPs as attributes</li>
+</ul>
+<p>The PYNQ <code>Overlay</code> class can be used to load an overlay. An overlay is instantiated by specifying the name of the bitstream file. Instantiating the Overlay also downloads the bitstream by default and parses the HWH file.</p>
+<pre data-role="codeBlock" data-info class="language-"><code>from pynq import Overlay
+overlay = Overlay(&quot;base.bit&quot;)
+</code></pre><h2 class="mume-header" id="pynq-z2-overlays">PYNQ-Z2 Overlays</h2>
+
+<p>The PYNQ-Z2 board has the following features:</p>
+<ul>
+<li>Zynq XC7Z020-1CLG400C</li>
+<li>512MB DDR3</li>
+<li>1G Ethernet</li>
+<li>USB 2.0</li>
+<li>MicroSD</li>
+<li>Uart</li>
+<li>ADAU1761 Audio Codec with 3.5mm HP/Mic and line-in jacks</li>
+<li>2x HDMI (can be used as input or output)</li>
+<li>4 push-buttons</li>
+<li>2 slide switches</li>
+<li>4 LEDs</li>
+<li>2 RGB LEDs</li>
+<li>2x Pmod ports</li>
+<li>1x Arduino header</li>
+<li>1x RaspberryPi header</li>
+</ul>
+<h3 class="mume-header" id="base-overlay">Base Overlay</h3>
+
+<p>The purpose of the base overlay design is to allow PYNQ to use peripherals on a board out-of-the-box. The design includes hardware IP to control peripherals on the target board, and connects these IP blocks to the Zynq PS. If a base overlay is available for a board, peripherals can be used from the Python environment immediately after the system boots.</p>
+<p>Board peripherals typically include GPIO devices (LEDs, Switches, Buttons), Video, Audio, and other custom interfaces.</p>
+<p>As the base overlay includes IP for the peripherals on a board, it can also be used as a reference design for creating new customized overlays.</p>
+<p>In the case of general purpose interfaces, for example Pmod or Arduino headers, the base overlay may include a PYNQ MicroBlaze. A PYNQ MicroBlaze allows control of devices with different interfaces and protocols on the same port without requiring a change to the programmable logic design.</p>
+<p><img src="pynqz2_base_overlay.png" alt="pynqz2 base overlay"></p>
+<p>The base overlay on PYNQ-Z2 includes the following hardware:</p>
+<ul>
+<li>HDMI (Input and Output)</li>
+<li>Audio codec</li>
+<li>User LEDs, Switches, Pushbuttons</li>
+<li>2x Pmod PYNQ MicroBlaze</li>
+<li>Arduino PYNQ MicroBlaze</li>
+<li>RPi (Raspberry Pi) PYNQ MicroBlaze</li>
+<li>4x Trace Analyzer (PMODA, PMODB, ARDUINO, RASPBERRYPI)</li>
+</ul>
+<h3 class="mume-header" id="logictools-overlay">Logictools Overlay</h3>
+
+<p>The logictools overlay consists of programmable hardware blocks to connect to external digital logic circuits. Finite state machines, Boolean logic functions and digital patterns can be generated from Python. A programmable switch connects the inputs and outputs from the hardware blocks to external IO pins. The logictools overlay can also has a trace analyzer to capture data from the IO interface for analysis and debug.</p>
+<p><img src="logictools_bd1.png" alt="Logictools base diagram"></p>
+<p>The logictools IP includes four main hardware blocks:</p>
+<ul>
+<li>Pattern Generator</li>
+<li>FSM Generator</li>
+<li>Boolean Generator</li>
+<li>Trace Analyzer</li>
+</ul>
+<p>Each block is configured using a textual description specified in Python. No compilation of the configuration is required. This means a configuration can be loaded directly to the generator and run immediately.</p>
+<h4 class="mume-header" id="pynq-z2-logic-tools">PYNQ-Z2 logic tools</h4>
+
+<p>The PYNQ-Z2 logictools overlay has two instances of the logictools LCP (Logic Control Processor); one connected to the Arduino header, and the other connected to the RPi (Raspberry Pi) header.</p>
+<p><img src="pynqz2_logictools.png" alt></p>
+<p>The overlay also includes a Pmod IOP connected to PmodB. This is the same Pmod IOP that is used in the base overlay.</p>
+<h4 class="mume-header" id="pattern-generator">Pattern Generator</h4>
+
+<p>The <em>Pattern Generator</em> can be configured to generate and stream arbitrary digital patterns to the external IO pins. The Pattern Generator can be used as a stimulus to test or control an external circuit.</p>
+<h4 class="mume-header" id="finite-state-machine-fsm-generator">Finite State Machine (FSM) Generator</h4>
+
+<p>The <em>FSM Generator</em> can create a finite state machine from a Python description. The inputs and outputs and states of the FSM can be connected to external IO pins.</p>
+<h4 class="mume-header" id="boolean-generator">Boolean Generator</h4>
+
+<p>The <em>Boolean Generator</em> can create independent combinatorial Boolean logic functions. The external IO pins are used as inputs and outputs to the Boolean functions.</p>
+<h4 class="mume-header" id="trace-analyzer">Trace Analyzer</h4>
+
+<p>The <em>Trace Analyzer</em> can capture IO signals and stream the data to the PS DRAM for analysis in the Python environment. The Trace Analyzer can be used standalone to capture external IO signals, or used in combination with the other three logictools functions to monitor data to and from the other blocks. E.g. the trace analyzer can be used with the pattern generator to verify the data sent to the external pins, or with the FSM to check the input, output or states to verify or debug a design.</p>
+
+      </div>
+      
+      
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    </body></html>
