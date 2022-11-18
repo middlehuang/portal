@@ -340,10 +340,10 @@ sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
 <pre data-role="codeBlock" data-info class="language-"><code>sudo service docker start
 
 sudo docker run hello-world
-</code></pre><h2 class="mume-header" id="config-docker-to-run-without-root">config Docker to run without root</h2>
+</code></pre><h2 class="mume-header" id="manage-docker-as-a-non-root-user">manage docker as a non-root user</h2>
 
 <p><a href="https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user">Reference</a></p>
-<p>FINN require Docker to run without root privilege</p>
+<p>Add your linux user to the group <em>docker</em></p>
 <pre data-role="codeBlock" data-info class="language-"><code>sudo groupadd docker
 
 sudo usermod -aG docker $USER
@@ -368,7 +368,7 @@ cd Vitis-AI
 <pre data-role="codeBlock" data-info class="language-"><code>./docker_run.sh xilinx/vitis-ai-cpu:latest
 </code></pre><h3 class="mume-header" id="building-docker-from-recipe">Building Docker from Recipe</h3>
 
-<p>Do this if you have GPU available. This takes about five hours to complete.</p>
+<p>This takes about five hours to complete.</p>
 <p>There are two types of docker recipes provided - CPU recipe and GPU recipe. If you have a compatible nVidia graphics card with CUDA support, you could use GPU recipe; otherwise you could use CPU recipe.</p>
 <h4 class="mume-header" id="cpu-docker">CPU Docker</h4>
 
@@ -386,44 +386,198 @@ cd Vitis-AI
 ./docker_build_gpu.sh
 </code></pre><p>To run the GPU docker, use command:</p>
 <pre data-role="codeBlock" data-info class="language-"><code>../docker_run.sh xilinx/vitis-ai-gpu:latest
-</code></pre><h1 class="mume-header" id="vitis-ai-quantizer-1">Vitis AI Quantizer</h1>
+</code></pre><h1 class="mume-header" id="resnet-18-model-training">ResNet 18 model training</h1>
 
-<p>After you start youur Vitis AI container. Enter this command to start your pytorch environment:</p>
+<p><a href="https://github.com/pytorch/examples/tree/main/imagenet">Reference</a></p>
+<p>After you start your Vitis AI container. Enter this command to start your pytorch environment:</p>
 <pre data-role="codeBlock" data-info class="language-"><code>conda activate vitis-ai-pytorch
 
 cd src/Vitis-AI-Quantizer/vai_q_pytorch/
-</code></pre><p>After that, you should see (vitis-ai-pytorch) at the start of your command line.</p>
-<h2 class="mume-header" id="quickstart-example">quickstart example</h2>
+</code></pre><p>After you start your pytorch environment, you should see (vitis-ai-pytorch) at the start of your command line.</p>
+<h2 class="mume-header" id="prepare-dataset">prepare dataset</h2>
 
-<p>Download pre-trained Resnet18 model</p>
-<pre data-role="codeBlock" data-info class="language-"><code>wget https://download.pytorch.org/models/resnet18-5c106cde.pth -O resnet18.pth
-</code></pre><p>Prepare Imagenet validation images. Log into <em>ImageNet</em>. Get <code>ILSVRC2012_img_val.tar</code> dataset from <em>ILSVRC2012</em> contest. Extracct it properly:</p>
-<pre data-role="codeBlock" data-info class="language-"><code>mkdir imagenet
+<h3 class="mume-header" id="download-full-imagenet-dataset">download full ImageNet dataset</h3>
 
-mkdir imagenet/val
+<p>Go to <a href="http://www.image-net.org">ImageNet</a> and register an account.</p>
+<p>Then log in and get <strong>ILSVRC2012</strong> dataset -- both train dataset and validation dataset. This may take several hours because train set takes about 138GB space.</p>
+<h3 class="mume-header" id="extract">extract</h3>
 
-mv ILSVRC2012_img_val.tar imagenet/val/
+<p>Move <code>ILSVRC2012_img_train.tar</code> to <code>&lt;your Vitis AI repository&gt;/src/Vitis-AI-Quantizer/vai_q_pytorch/example/imagenet_full/train</code> (create two folders for it). Execute the following command there to extract training set and remove compressed file:</p>
+<pre data-role="codeBlock" data-info class="language-"><code>tar -xvf ILSVRC2012_img_train.tar &amp;&amp; rm -f ILSVRC2012_img_train.tar
+</code></pre><p>At this stage <code>imagenet_full/train</code> will contain 1000 compressed <code>.tar</code> files, one for each category</p>
+<p>Move <code>ILSVRC2012_img_val.tar</code> to <code>&lt;your Vitis AI repository&gt;/src/Vitis-AI-Quantizer/vai_q_pytorch/example/imagenet_full/val</code> (create another folder for it). Execute the following command there to extract validation .tar, remove compressed file, create all class directories, and moves images into corresponding directories:</p>
+<pre data-role="codeBlock" data-info class="language-"><code>tar -xvf ILSVRC2012_img_val.tar &amp;&amp; rm -f ILSVRC2012_img_val.tar
 
-cd imagenet/val
-
-tar -xvf ILSVRC2012_img_val.tar
-
-rm -f ILSVRC2012_img_val.tar
-
-# get script from soumith and run; this script creates all class directories and moves images into corresponding directories
 wget -qO- https://raw.githubusercontent.com/soumith/imagenetloader.torch/master/valprep.sh | bash
+</code></pre><p>At this stage <code>imagenet_full/val</code> will contain 1000 folders (categories) with 50 <code>.JPEG</code> files each.</p>
+<p>Create three folders to save the datasets you want to use: <code>&lt;your Vitis AI repository&gt;/src/Vitis-AI-Quantizer/vai_q_pytorch/example/imagenet</code>, <code>&lt;your Vitis AI repository&gt;/src/Vitis-AI-Quantizer/vai_q_pytorch/example/imagenet/train</code>, and , <code>&lt;your Vitis AI repository&gt;/src/Vitis-AI-Quantizer/vai_q_pytorch/example/imagenet/val</code></p>
+<h3 class="mume-header" id="choose-classification-class">choose classification class</h3>
 
-cd ../../
-</code></pre><p>Evaluate float model</p>
+<p><a href="https://github.com/Cadene/pretrained-models.pytorch/blob/master/data/imagenet_synsets.txt">This text file</a> represent the true meaning behind each class name. And you can find the list of all available ImageNet classes in <code>&lt;your Vitis AI repository&gt;/examples/VART/resnet50_pt/word_list.inc</code>. For example, you can see from the first line,  folder <code>n02119789</code> represent class <code>kit fox, Vulpes macrotis</code></p>
+<p>Choose some classes you want to classify listed in <code>word_list.inc</code> file. Convert them into class name and find them in the <code>imagenet_full/val</code> folder. Check the content to see if it matches your expectation. If so, copy corresponding <em>training tar</em> and <em>val folder</em> into <code>imagenet/train</code> and <code>imagenet/val</code> respectively, and extract the training tar. For example, if you want to train <em>balloon</em> class, which is encoded as <code>n02782093</code>. Then you should check <code>imagenet_full/val/n02782093</code> folder. Do the images match what you expected? If so, copy <code>imagenet_full/val/n02782093</code> to <code>imagenet/val</code> and <code>imagenet_full/train/n02782093.tar</code> to <code>imagenet/train</code> and extract it.</p>
+<p>You should have same folder names in <code>imagenet/train</code> and <code>imagenet/val</code></p>
+<h2 class="mume-header" id="training-resnet18-model">training ResNet18 model</h2>
+
+<p>We use <a href="https://github.com/pytorch/examples/blob/main/imagenet/main.py">this file</a> to train our model. save it in <code>&lt;your Vitis AI repository&gt;/src/Vitis-AI-Quantizer/vai_q_pytorch/example</code> folder</p>
+<h3 class="mume-header" id="modify-mainpy-file">modify <a href="http://main.py">main.py</a> file</h3>
+
+<ul>
+<li>replacce <code>if not torch.cuda.is_available() and not torch.backends.mps.is_available():</code> with <code>if not torch.cuda.is_available():</code></li>
+<li>remove these parts in <code>main_worker</code> function definition:</li>
+</ul>
+<pre data-role="codeBlock" data-info class="language-"><code>    elif args.gpu is not None and torch.cuda.is_available():
+        torch.cuda.set_device(args.gpu)
+        model = model.cuda(args.gpu)
+# remove this
+#    elif torch.backends.mps.is_available():
+#        device = torch.device(&quot;mps&quot;)
+#        model = model.to(device)
+...
+    if torch.cuda.is_available():
+        if args.gpu:
+            device = torch.device(&apos;cuda:{}&apos;.format(args.gpu))
+        else:
+            device = torch.device(&quot;cuda&quot;)
+# and remove this
+#    elif torch.backends.mps.is_available():
+#        device = torch.device(&quot;mps&quot;)
+</code></pre><ul>
+<li>After <code>val_dataset</code> definition, add the following line to change <code>train_dataset.targets</code>, <code>train_dataset.samples</code>, <code>val_dataset.targets</code>, and <code>val_dataset.samples</code> according to their index in <code>word_list.inc</code> file. For example, you choose <code>bloon</code> and <code>eel</code> class, which is at <code>391th</code> and <code>418th</code> line in <code>word_list.inc</code> file. Add these lines:</li>
+</ul>
+<pre data-role="codeBlock" data-info class="language-"><code>val_dataset = datasets.ImageFolder(
+    valdir,
+    transforms.Compose([
+        transforms.Resize(256),
+        transforms.CenterCrop(224),
+        transforms.ToTensor(),
+        normalize,
+    ]))
+
+# add these lines
+train_dataset.targets=torch.tensor(train_dataset.targets)
+train_dataset.targets[train_dataset.targets == 0] = 390
+train_dataset.targets[train_dataset.targets == 1] = 417
+train_dataset.samples = [(d, 390) if s == 0
+                        else (d, 417) if s == 1
+                        else (d, s) for d, s in train_dataset.samples]
+
+val_dataset.targets=torch.tensor(val_dataset.targets)
+val_dataset.targets[val_dataset.targets == 0] = 390
+val_dataset.targets[val_dataset.targets == 1] = 417
+val_dataset.samples = [(d, 390) if s == 0
+                        else (d, 417) if s == 1
+                        else (d, s) for d, s in val_dataset.samples]
+</code></pre><ul>
+<li>Remove this part in <code>validate</code> function definition</li>
+</ul>
+<pre data-role="codeBlock" data-info class="language-"><code>for i, (images, target) in enumerate(loader):
+        i = base_progress + i
+        if args.gpu is not None and torch.cuda.is_available():
+            images = images.cuda(args.gpu, non_blocking=True)
+# remove this part
+#        if torch.backends.mps.is_available():
+#            images = images.to(&apos;mps&apos;)
+#            target = target.to(&apos;mps&apos;)
+</code></pre><ul>
+<li>Change <code>def save_checkpoint(state, is_best, filename=&apos;checkpoint.pth.tar&apos;):</code> into <code>def save_checkpoint(state, is_best, filename=&apos;checkpoint.pth&apos;):</code></li>
+<li>Change <code>shutil.copyfile(filename, &apos;model_best.pth.tar&apos;)</code> into <code>shutil.copyfile(filename, &apos;model_best.pth&apos;)</code></li>
+<li>Remove this part from <code>AverageMeter</code> class definition</li>
+</ul>
+<pre data-role="codeBlock" data-info class="language-"><code>def all_reduce(self):
+    if torch.cuda.is_available():
+        device = torch.device(&quot;cuda&quot;)
+$ Remove this part
+#        elif torch.backends.mps.is_available():
+#            device = torch.device(&quot;mps&quot;)
+</code></pre><h3 class="mume-header" id="start-training">Start training</h3>
+
+<p>Use the following command to start training, or resume from checkpoint. After some time, you should get <code>checkpoint.pth</code> file (After your latest epoch) and <code>model_best.pth</code> file (Your best model so far)</p>
+<pre data-role="codeBlock" data-info class="language-"><code># determine epoch number. default 90
+
+python main.py --epoch epoch
+
+# if you want to continue from checkpoint
+
+python main.py --resume checkpoint.pth --epoch epoch
+
+# if you want to evaluate accuracy
+
+python main.py --resume model_best.pth -e
+</code></pre><h1 class="mume-header" id="vitis-ai-quantizer-1">Vitis AI Quantizer</h1>
+
+<p>Make sure you activate your pytorch environment.</p>
+<h2 class="mume-header" id="quantize-your-resnet18-model">Quantize your ResNet18 model</h2>
+
+<h3 class="mume-header" id="modiffy-resnet18_quantpy-file">modiffy resnet18_quant.py file</h3>
+
+<ul>
+<li>change default <code>data_dir</code> and <code>model_dir</code> argument</li>
+</ul>
+<pre data-role="codeBlock" data-info class="language-"><code>parser.add_argument(
+    &apos;--data_dir&apos;,
+# change this
+#    default=&quot;/path/to/imagenet/&quot;,
+    default=&quot;/workspace/src/Vitis-AI-Quantizer/vai_q_pytorch/example/imagenet&quot;,
+    help=&apos;Data set directory, when quant_mode=calib, it is for calibration, while quant_mode=test it is for evaluation&apos;)
+parser.add_argument(
+    &apos;--model_dir&apos;,
+# change this
+#    default=&quot;/path/to/trained_model/&quot;,
+    default=&quot;/workspace/src/Vitis-AI-Quantizer/vai_q_pytorch/example&quot;,
+    help=&apos;Trained model file path. Download pretrained model from the following url and put it in model_dir specified path: https://download.pytorch.org/models/resnet18-5c106cde.pth&apos;
+)
+</code></pre><ul>
+<li>Add another argument</li>
+</ul>
+<pre data-role="codeBlock" data-info class="language-"><code>parser.add_argument(
+    &apos;--model_name&apos;,
+    default=&quot;model_best.pth&quot;,
+    help=&apos;model name with format&apos;)
+</code></pre><ul>
+<li>After <code>dataset</code> definition, add the following line to change <code>dataset.targets</code> and <code>dataset.samples</code> according to their index in <code>word_list.inc</code> file. For example, you choose <code>bloon</code> and <code>eel</code> class, which is at <code>391th</code> and <code>418th</code> line in <code>word_list.inc</code> file. Add these lines (Note: there are two of them. Add both):</li>
+</ul>
+<pre data-role="codeBlock" data-info class="language-"><code>dataset = torchvision.datasets.ImageFolder(
+    traindir,
+    transforms.Compose([
+        transforms.RandomResizedCrop(size),
+        transforms.RandomHorizontalFlip(),
+        transforms.ToTensor(),
+        normalize,
+    ]))
+
+# add these lines
+dataset.targets=torch.tensor(train_dataset.targets)
+dataset.targets[train_dataset.targets == 0] = 390
+dataset.targets[train_dataset.targets == 1] = 417
+dataset.samples = [(d, 390) if s == 0
+                        else (d, 417) if s == 1
+                        else (d, s) for d, s in dataset.samples]
+</code></pre><ul>
+<li>Replace <code>model.load_state_dict(torch.load(file_path))</code> with <code>model.load_state_dict(torch.load(file_path)[&apos;state_dict&apos;])</code></li>
+<li>Replace <code>model_name = &apos;resnet18&apos;</code> with <code>model_name = args.model_name</code></li>
+<li>Replace <code>file_path = os.path.join(args.model_dir, model_name + &apos;.pth&apos;)</code> with <code>file_path = os.path.join(args.model_dir, model_name)</code></li>
+</ul>
+<h2 class="mume-header" id="evaluate-float-model">Evaluate float model</h2>
+
 <pre data-role="codeBlock" data-info class="language-"><code>python resnet18_quant.py --quant_mode float
-</code></pre><p>Inspect float model</p>
+</code></pre><h2 class="mume-header" id="optional-inspect-float-model">(Optional) Inspect float model</h2>
+
 <pre data-role="codeBlock" data-info class="language-"><code>python resnet18_quant.py --quant_mode float --inspect
-</code></pre><p>Quantize, using a subset (200 images) of validation data for calibration. Because we are in quantize calibration process, the displayed loss and accuracy are meaningless.</p>
+</code></pre><h2 class="mume-header" id="quantize">Quantize</h2>
+
+<p>Using a subset (200 images) of validation data for calibration. Because we are in quantize calibration process, the displayed loss and accuracy are meaningless.</p>
 <pre data-role="codeBlock" data-info class="language-"><code>python resnet18_quant.py --quant_mode calib --subset_len 200
-</code></pre><p>Evaluate quantized model</p>
+</code></pre><h2 class="mume-header" id="evaluate-quantized-model">Evaluate quantized model</h2>
+
 <pre data-role="codeBlock" data-info class="language-"><code>python resnet18_quant.py --quant_mode test
-</code></pre><p>Export xmodel and onnx</p>
+</code></pre><h2 class="mume-header" id="export-xmodel-and-onnx">Export xmodel and onnx</h2>
+
 <pre data-role="codeBlock" data-info class="language-"><code>python resnet18_quant.py --quant_mode test --subset_len 1 --batch_size 1 --deploy
+</code></pre><h1 class="mume-header" id="vitis-ai-compiler-1">Vitis AI Compiler</h1>
+
+<h2 class="mume-header" id="compile-your-quantized-resnet18-xmodel">compile your Quantized ResNet18 xmodel</h2>
+
+<pre data-role="codeBlock" data-info class="language-"><code>vai_c_xir -x /PATH/TO/quantized.xmodel -a /PATH/TO/arch.json -o /OUTPUTPATH -n netname
 </code></pre>
       </div>
       
